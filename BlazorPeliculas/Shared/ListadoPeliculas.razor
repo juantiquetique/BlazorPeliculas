@@ -1,0 +1,43 @@
+﻿<div>
+    <br />
+    <h4>Ejemplo Foreach</h4>
+    @foreach (var pelicula in ObtenerPeliculas())
+    {
+        <div>
+            <p>
+                Título: <b>@pelicula.Titulo</b>
+                @* Condicional *@
+                @if (DateTime.Today.Subtract(pelicula.FechaLanzamiento).Days <= 14)
+                {
+                    <span style="color: red"> (¡NUEVO!)</span>
+                }
+            </p>
+
+            <p>Fecha lanzamiento: <b>@pelicula.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
+        </div>
+    }
+    <br />
+    <h4>Ejemplo for</h4>
+    @for (int i = 0; i < Peliculas.Count; i++)
+    {
+        <div>
+            <p><b>@(i + 1))</b> Título: <b>@Peliculas[i].Titulo</b></p>
+            <p>Fecha lanzamiento: <b>@Peliculas[i].FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
+        </div>
+    }
+</div>
+
+
+@code {
+    List<Pelicula> Peliculas { get { return ObtenerPeliculas(); } }
+
+    List<Pelicula> ObtenerPeliculas()
+    {
+        return new List<Pelicula>()
+        {
+            new Pelicula{Titulo = "Wakanda Forever", FechaLanzamiento = new DateTime(2025, 10, 10)},
+            new Pelicula{Titulo = "Moana", FechaLanzamiento = new DateTime(2016, 11, 23)},
+            new Pelicula{Titulo = "Inception", FechaLanzamiento = new DateTime(2010, 7, 16)},
+        };
+    }
+}

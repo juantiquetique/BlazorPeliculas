@@ -28,10 +28,11 @@
 
 @* SECCIÓN 2:EJEMPLO DE INSTRODUCCIÓN A RAZOR *@
 
-<div>
+@* Información de una pelicula *@
+@* <div>
     <h3>Película</h3>
     <p>Título: <b>@WakandaForever.Titulo</b></p>
-    <p>Fecha lanzamiento: <b>@WakandaForever.FechaLanzamiento.ToString("dd MM yyyy")</b></p>
+    <p>Fecha lanzamiento: <b>@WakandaForever.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
 </div>
 
 @code{
@@ -46,5 +47,57 @@
             FechaLanzamiento = new DateTime(2022, 11, 11)
         };
     }
+} *@
 
-}
+
+@* Lo siguiente ↓ se comenta y se copia para ponerlo en el componente "Shared/ListadoPeliculas.razor" *@
+
+@* Bucles: información de varias peliculas con foreach y for *@
+@* <div>
+    <h3>Película</h3>
+    <br />
+    <h4>Ejemplo Foreach</h4>
+    @foreach(var pelicula in ObtenerPeliculas())
+    {
+        <div>
+            <p>Título: <b>@pelicula.Titulo</b>
+                Condicional
+                @if(DateTime.Today.Subtract(pelicula.FechaLanzamiento).Days <= 14)
+                {
+                    <span style="color: red"> (¡NUEVO!)</span>
+                }
+            </p>
+
+            <p>Fecha lanzamiento: <b>@pelicula.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
+        </div>
+    }
+    <br />
+    <h4>Ejemplo for</h4>
+    @for (int i = 0; i < Peliculas.Count ; i++)
+    {
+        <div>
+            <p><b>@(i + 1))</b> Título: <b>@Peliculas[i].Titulo</b></p>
+            <p>Fecha lanzamiento: <b>@Peliculas[i].FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
+        </div>
+    }
+</div> *@
+
+@* @code{
+    List<Pelicula> Peliculas{get{ return ObtenerPeliculas(); }}
+
+    List<Pelicula> ObtenerPeliculas()
+    {
+        return new List<Pelicula>()
+        {
+            new Pelicula{Titulo = "Wakanda Forever", FechaLanzamiento = new DateTime(2025, 10, 10)},
+            new Pelicula{Titulo = "Moana", FechaLanzamiento = new DateTime(2016, 11, 23)},
+            new Pelicula{Titulo = "Inception", FechaLanzamiento = new DateTime(2010, 7, 16)},
+        };
+    }
+} *@
+
+
+<div>
+    <h3>Películas</h3>
+    <ListadoPeliculas />
+</div>
