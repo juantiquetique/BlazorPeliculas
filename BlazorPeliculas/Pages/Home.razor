@@ -1,0 +1,50 @@
+﻿@page "/"
+
+@* SECCIÓN 1: EJEMPLOS DE INTRODUCCIÓN *@
+
+@* Exprecion Implicita *@
+@* <p>Hola, @nombre.ToUpper()</p> *@
+
+@* Expresion Explicita *@
+@* <p>Vamos a sumar 2 + 2 = @(2+2)</p> *@
+
+@* Expresión explicita con expresion lambda *@
+@* <button @onclick=@(() => Console.WriteLine("Me han clickeado!"))>Presióname</button> *@
+
+@* Expresion implicita con funcion *@
+@* <button @onclick=@ManejarClickBoton>Presióname con función</button> *@
+
+@* @code{
+    string nombre = "David";
+
+    string Transformar(string valor) => valor.ToUpper();
+
+    void ManejarClickBoton()
+    {
+        Console.WriteLine("Me han Clickeado desde una función!");
+    }
+} *@
+
+
+@* SECCIÓN 2:EJEMPLO DE INSTRODUCCIÓN A RAZOR *@
+
+<div>
+    <h3>Película</h3>
+    <p>Título: <b>@WakandaForever.Titulo</b></p>
+    <p>Fecha lanzamiento: <b>@WakandaForever.FechaLanzamiento.ToString("dd MM yyyy")</b></p>
+</div>
+
+@code{
+    Pelicula WakandaForever { get { return ObtenerPelicula(); } }
+
+    // Metodo
+    Pelicula ObtenerPelicula()
+    {
+        return new Pelicula
+        {
+            Titulo = "Wakanda Forever",
+            FechaLanzamiento = new DateTime(2022, 11, 11)
+        };
+    }
+
+}
