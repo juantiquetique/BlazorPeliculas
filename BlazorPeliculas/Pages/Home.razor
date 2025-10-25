@@ -99,5 +99,17 @@
 
 <div>
     <h3>Películas</h3>
-    <ListadoPeliculas />
+    <ListadoPeliculas Peliculas="ObtenerPeliculas()"/>
 </div>
+
+@code{
+    List<Pelicula> ObtenerPeliculas()
+    {
+        return new List<Pelicula>()
+        {
+            new Pelicula{Titulo = "Wakanda Forever", FechaLanzamiento = new DateTime(2025, 10, 10)},
+            new Pelicula{Titulo = "Moana", FechaLanzamiento = new DateTime(2016, 11, 23)},
+            new Pelicula{Titulo = "Inception", FechaLanzamiento = new DateTime(2010, 7, 16)},
+        };
+    }
+}

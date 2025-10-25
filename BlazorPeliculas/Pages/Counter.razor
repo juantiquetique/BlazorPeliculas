@@ -8,11 +8,24 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<br />
+
+<ListadoPeliculas Peliculas="ObtenerPeliculas()" />
+
 @code {
     private int currentCount = 0;
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+
+    List<Pelicula> ObtenerPeliculas()
+    {
+        return new List<Pelicula>()
+        {
+            new Pelicula{Titulo = "Spider-Man: far from home", FechaLanzamiento = new DateTime(2025, 10, 20)},
+            new Pelicula{Titulo = "Avengers end game", FechaLanzamiento = new DateTime(2016, 11, 23)},
+        };
     }
 }

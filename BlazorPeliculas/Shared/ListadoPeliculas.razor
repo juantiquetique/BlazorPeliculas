@@ -1,4 +1,5 @@
-﻿<div>
+﻿@* ejemplo componentes *@
+@* <div>
     <br />
     <h4>Ejemplo Foreach</h4>
     @foreach (var pelicula in ObtenerPeliculas())
@@ -6,7 +7,7 @@
         <div>
             <p>
                 Título: <b>@pelicula.Titulo</b>
-                @* Condicional *@
+                Condicional
                 @if (DateTime.Today.Subtract(pelicula.FechaLanzamiento).Days <= 14)
                 {
                     <span style="color: red"> (¡NUEVO!)</span>
@@ -25,10 +26,11 @@
             <p>Fecha lanzamiento: <b>@Peliculas[i].FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
         </div>
     }
-</div>
+</div> *@
 
 
-@code {
+@* @code {
+    componentes
     List<Pelicula> Peliculas { get { return ObtenerPeliculas(); } }
 
     List<Pelicula> ObtenerPeliculas()
@@ -40,4 +42,30 @@
             new Pelicula{Titulo = "Inception", FechaLanzamiento = new DateTime(2010, 7, 16)},
         };
     }
+} *@
+
+
+@if(Peliculas is null)
+{
+    <img alt="cargando"
+         src="https://usagif.com/wp-content/uploads/loading-11.gif" />
+}
+else if(Peliculas.Count == 0)
+{
+    <p>No hay películas para mostrar.</p>
+}
+else
+{
+    @foreach (var pelicula in Peliculas)
+    {
+        <PeliculaIndividual pelicula="pelicula" />
+    }
+}
+
+
+
+@code{
+    [Parameter]
+    [EditorRequired] //Esto es por si se olvida pasar el parámetro Peliculas="ObtenerPeliculas()"
+    public List<Pelicula>? Peliculas { get; set; }
 }
