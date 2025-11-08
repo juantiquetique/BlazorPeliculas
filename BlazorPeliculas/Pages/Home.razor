@@ -97,12 +97,73 @@
 } *@
 
 
-<div>
+@* <div>
     <h3>Películas</h3>
     <ListadoPeliculas Peliculas="ObtenerPeliculas()"/>
 </div>
 
 @code{
+    List<Pelicula> ObtenerPeliculas()
+    {
+        return new List<Pelicula>()
+        {
+            new Pelicula{Titulo = "Wakanda Forever", FechaLanzamiento = new DateTime(2025, 10, 10)},
+            new Pelicula{Titulo = "Moana", FechaLanzamiento = new DateTime(2016, 11, 23)},
+            new Pelicula{Titulo = "Inception", FechaLanzamiento = new DateTime(2010, 7, 16)},
+        };
+    }
+} *@
+
+@* EJEMPLOS PARAMETROS ALBITRARIOS *@
+
+<div>
+    <h3>Películas</h3>
+    <ListadoPeliculas Peliculas="ObtenerPeliculas()" />
+</div>
+
+@* Ejemplo1 *@
+@* <div>
+    <h2>Crear nueva película</h2>
+    <EjemploTextbox placeholder="Nombre Película" disabled="true" />
+</div> *@
+
+@* Ejemplo 2 *@
+@* <div>
+    <h2>Crear nueva película</h2>
+    <EjemploTextbox @attributes="@(new Dictionary<string,object>()
+                                   {
+                                            {"placeholder","Nuevo placeholder"},
+                                            {"disabled", "true"}
+                                   })" />
+</div> *@
+
+@* Ejemplo 3 para no sobre cargar el componente con muchos parámetros el HTML *@
+@* Ejemplo 3 *@
+<div>
+    <h2>Crear nueva película</h2>
+    @* Ejemplo de la variable que se creo en el bloque @code *@
+    @* <EjemploTextbox @attributes="EjemplosTextboxParametros" /> *@
+    
+    @* Los dos siguientes ejemplos es cuando en ejemploTextbpx.razor se pone el placeholder = "Placeholder por defecto" *@
+    @* Con el placeholder *@
+    <EjemploTextbox placeholder="placeholder index" />
+    
+    @* si el placeholder *@
+    <EjemploTextbox  />
+</div>
+
+@code {
+
+    //****************************************************************/
+    // Esto es para el ejemplo 3 de parámetros arbitrarios
+    // Esta variable EjemplosTextboxParametros almacena el diccionario de parámetros adicionales para el componente EjemploTextbox
+    // private Dictionary<string, object> EjemplosTextboxParametros = new Dictionary<string, object>()
+    // {
+    //     {"placeholder","Nuevo placeholder 2"},
+    //     {"disabled", "true"}
+    // };
+    //****************************************************************/
+
     List<Pelicula> ObtenerPeliculas()
     {
         return new List<Pelicula>()

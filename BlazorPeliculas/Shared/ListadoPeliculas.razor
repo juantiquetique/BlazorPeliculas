@@ -56,9 +56,14 @@ else if(Peliculas.Count == 0)
 }
 else
 {
+    <input type="checkbox" @onchange="@(() => MostrarBotonEliminar = !MostrarBotonEliminar)" />
+    <span>
+        Mostrar botones de eliminar
+    </span>
+
     @foreach (var pelicula in Peliculas)
     {
-        <PeliculaIndividual pelicula="pelicula" />
+        <PeliculaIndividual pelicula="pelicula" MostrarBotonEliminar = "MostrarBotonEliminar"/>
     }
 }
 
@@ -68,4 +73,6 @@ else
     [Parameter]
     [EditorRequired] //Esto es por si se olvida pasar el parámetro Peliculas="ObtenerPeliculas()"
     public List<Pelicula>? Peliculas { get; set; }
+
+    bool MostrarBotonEliminar = false;
 }
