@@ -56,14 +56,20 @@ else if(Peliculas.Count == 0)
 }
 else
 {
-    <input type="checkbox" @onchange="@(() => MostrarBotonEliminar = !MostrarBotonEliminar)" />
+    @* Si databinding *@
+    @* <input type="checkbox" @onchange="@(() => MostrarBotonEliminar = !MostrarBotonEliminar)" /> *@
+    
+    @* Con databinding *@
+    <input type="checkbox" @bind="MostrarBotonEliminar" />
     <span>
         Mostrar botones de eliminar
     </span>
 
     @foreach (var pelicula in Peliculas)
     {
-        <PeliculaIndividual pelicula="pelicula" MostrarBotonEliminar = "MostrarBotonEliminar"/>
+        <PeliculaIndividual pelicula="pelicula" 
+                            Eliminarpelicula="EliminarPelicula"
+            MostrarBotonEliminar = "MostrarBotonEliminar"/>
     }
 }
 
@@ -75,4 +81,10 @@ else
     public List<Pelicula>? Peliculas { get; set; }
 
     bool MostrarBotonEliminar = false;
+
+    private void EliminarPelicula(Pelicula pelicula)
+    {
+        Console.WriteLine("Eliminado una Pelicula");
+        Peliculas!.Remove(pelicula);
+    }
 }

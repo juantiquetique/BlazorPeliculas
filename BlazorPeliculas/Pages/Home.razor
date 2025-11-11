@@ -139,18 +139,29 @@
 
 @* Ejemplo 3 para no sobre cargar el componente con muchos parámetros el HTML *@
 @* Ejemplo 3 *@
-<div>
-    <h2>Crear nueva película</h2>
+@* <div>
+    <h2>Crear nueva película</h2> *@
     @* Ejemplo de la variable que se creo en el bloque @code *@
     @* <EjemploTextbox @attributes="EjemplosTextboxParametros" /> *@
     
     @* Los dos siguientes ejemplos es cuando en ejemploTextbpx.razor se pone el placeholder = "Placeholder por defecto" *@
     @* Con el placeholder *@
-    <EjemploTextbox placeholder="placeholder index" />
+    @* <EjemploTextbox placeholder="placeholder index" /> *@
     
     @* si el placeholder *@
-    <EjemploTextbox  />
-</div>
+@*     <EjemploTextbox  />
+</div> *@
+
+
+@* BIND EVENT - ONINPUT *@
+@* <BindEvento /> *@
+
+@* BIND GET SET ASYNC donde se excribe y en este ejemplo se pude poner en mayuscula con toupper*@
+@* <BindGetSetDemo/> *@
+
+@*bind after - after se ejecuta despues de que se termine de escribir en el input*@
+@* <BIndAfterDemo/> *@
+
 
 @code {
 
