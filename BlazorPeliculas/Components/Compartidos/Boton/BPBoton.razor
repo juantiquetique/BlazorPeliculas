@@ -1,0 +1,43 @@
+﻿<button type="@Tipo.ToString()" disabled="@Disabled" class="@ClaseCSS">@Texto</button>
+
+@code {
+    //recibe por defecto el valor "Enviar", pero se puede cambiar al usar el componente BPBoton en otro lugar, como por ejemplo en Home.razor
+    [Parameter] public required string Texto { get; set; } = "Enviar";
+
+    //valor por defecto de un bool es false
+    [Parameter] public bool Disabled { get; set; }
+
+    // Recibe por defecto el valor BotonTipo.Button, pero se puede cambiar a 
+    // BotonTipo.Submit o BotonTipo.Reset al usar el componente BPBoton en otro lugar, como por ejemplo en Home.razor
+    [Parameter] public BotonTipo Tipo { get; set; } = BotonTipo.Button;
+
+    [Parameter] public Variante Variante { get; set; } = Variante.Primario;
+    [Parameter] public Tamaño Tamaño { get; set; } = Tamaño.Md;
+
+    private string ClaseCSS
+    {
+        get
+        {
+            string[] clases = [
+                "btn",
+                Variante switch {
+                    Variante.Primario => "btn-primary",
+                    Variante.Secundario => "btn-secondary",
+                    Variante.Exitoso => "btn-success",
+                    Variante.Advertencia => "btn-warning",
+                    Variante.Error => "btn-danger",
+                    _ => "btn-primary"
+                },
+                Tamaño switch{
+                    Tamaño.Sm => "btn-sm",
+                    Tamaño.Md => "btn-md",
+                    Tamaño.Lg => "btn-lg",
+                    _ => "btn-md"
+                }
+            ];
+
+            return string.Join(" ", clases);
+        }
+    }
+}
+}

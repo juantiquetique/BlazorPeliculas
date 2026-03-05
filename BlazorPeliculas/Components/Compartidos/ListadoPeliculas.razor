@@ -1,10 +1,28 @@
-﻿<div>
-    @foreach(var pelicula in Peliculas)
+﻿@if (Peliculas is null)
+{
+    <Cargando/>
+} else if (Peliculas.Count == 0)
+{
+    <text>No existen Películas para mostrar...</text>
+}
+else
+{
+    <div>
+        @foreach(var pelicula in Peliculas)
+        {
+            <PeliculaInfividual Pelicula="@pelicula"/>
+        }
+    </div>
+}
+
+@* esto sabiendo que el componente ListadoPeliculas se va a reutilizar para mostrar diferentes listas de películas, y que es seguro que si tiene ==*@ 
+@* <div>
+    @foreach (var pelicula in Peliculas)
     {
         <p>Título:<b>@pelicula.Titulo</b></p>
         <p>Fecha Lanzamiento: <b>@pelicula.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
     }
-</div>
+</div> *@
 
 @code {
 
@@ -25,5 +43,16 @@
     //      }
     // };
 
-    [Parameter] public required List<Pelicula> Peliculas { get; set; }
+    // esto sabiendo que el componente ListadoPeliculas se va a reutilizar para mostrar diferentes listas de películas, y que es seguro que si tiene ==
+    // [Parameter] public required List<Pelicula> Peliculas { get; set; }
+
+    // acepta nulos, por eso el signo de interrogación después del tipo de dato List<Pelicula>?, 
+    // lo que indica que la propiedad Peliculas puede ser nula.Esto es útil para manejar casos 
+    // en los que no se han cargado las películas o no hay datos disponibles, permitiendo 
+    // mostrar un mensaje de carga o un mensaje indicando que no hay películas para mostrar.
+    
+    // El EditorRequired es un atributo que se utiliza para indicar que la propiedad Peliculas es requerida en el editor de Blazor. 
+    // Esto significa que cuando se utiliza el componente ListadoPeliculas en otro lugar, 
+    // el editor de Blazor marcará esta propiedad como obligatoria y mostrará un error si no se proporciona un valor para ella.
+    [Parameter, EditorRequired] public List<Pelicula>? Peliculas { get; set; }
 }

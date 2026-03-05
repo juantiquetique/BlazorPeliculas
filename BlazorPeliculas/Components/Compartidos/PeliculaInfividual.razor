@@ -1,0 +1,7 @@
+﻿<p>Título:<b>@Pelicula.Titulo</b></p>
+<p>Fecha Lanzamiento: <b>@Pelicula.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
+
+@code {
+    // Parametros requeridos
+    [Parameter, EditorRequired] public required Pelicula Pelicula { get; set; }
+}

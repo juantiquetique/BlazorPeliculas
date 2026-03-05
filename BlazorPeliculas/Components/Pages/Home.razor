@@ -1,6 +1,13 @@
 ﻿@page "/"
-
+@attribute [StreamRendering]
 <PageTitle>Home</PageTitle>
+
+<BPBoton/>
+<BPBoton Variante="Variante.Advertencia" Tamaño="Tamaño.Lg"/>
+<BPBoton Variante="Variante.Error" Tamaño="Tamaño.Sm"/>
+<BPBoton Texto="Texto Personalizado" Disabled="true" Tipo="BotonTipo.Submit" Variante="Variante.Exitoso"/>
+
+<hr />
 
 <h3>En Cartelera</h3>
 <ListadoPeliculas Peliculas="enCartelera"/>
@@ -11,35 +18,43 @@
 
 @code {
     
-    private List<Pelicula> enCartelera = new List<Pelicula>
+    protected override async Task OnInitializedAsync()
     {
-         new Pelicula
-         {
-             Id = 1,
-             Titulo = "Captain America: Brave New World",
-             FechaLanzamiento = new DateTime(2025,2,14)
-         },
-         new Pelicula
-         {
-             Id = 2,
-             Titulo = "Mission: Impossible - Dead Reckoning Part two",
-             FechaLanzamiento = new DateTime(2025,5,23)
-         }
-    };
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        enCartelera = new List<Pelicula>
+        {
+             new Pelicula
+             {
+                 Id = 1,
+                 Titulo = "Captain America: Brave New World",
+                 FechaLanzamiento = new DateTime(2025,2,14)
+             },
+             new Pelicula
+             {
+                 Id = 2,
+                 Titulo = "Mission: Impossible - Dead Reckoning Part two",
+                 FechaLanzamiento = new DateTime(2025,5,23)
+             }
+        };
 
-    private List<Pelicula> futurosEstrenos = new List<Pelicula>
-    {
-         new Pelicula
-         {
-             Id = 3,
-             Titulo = "Avengers: Secret Wars",
-             FechaLanzamiento = new DateTime(2027,5,7)
-         },
-         new Pelicula
-         {
-             Id = 4,
-             Titulo = "The Batman - Part II",
-             FechaLanzamiento = new DateTime(2027,10,1)
-         }
-    };
+        futurosEstrenos = new List<Pelicula>
+        {
+             new Pelicula
+             {
+                 Id = 3,
+                 Titulo = "Avengers: Secret Wars",
+                 FechaLanzamiento = new DateTime(2027,5,7)
+             },
+             new Pelicula
+             {
+                 Id = 4,
+                 Titulo = "The Batman - Part II",
+                 FechaLanzamiento = new DateTime(2027,10,1)
+             }
+        };
+
+    }
+    
+    private List<Pelicula>? enCartelera = null;
+    private List<Pelicula>? futurosEstrenos = null;
 }
