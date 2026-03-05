@@ -1,0 +1,45 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h3>En Cartelera</h3>
+<ListadoPeliculas Peliculas="enCartelera"/>
+
+<h3>Futuros Estrenos</h3>
+<ListadoPeliculas Peliculas="futurosEstrenos"/>
+
+
+@code {
+    
+    private List<Pelicula> enCartelera = new List<Pelicula>
+    {
+         new Pelicula
+         {
+             Id = 1,
+             Titulo = "Captain America: Brave New World",
+             FechaLanzamiento = new DateTime(2025,2,14)
+         },
+         new Pelicula
+         {
+             Id = 2,
+             Titulo = "Mission: Impossible - Dead Reckoning Part two",
+             FechaLanzamiento = new DateTime(2025,5,23)
+         }
+    };
+
+    private List<Pelicula> futurosEstrenos = new List<Pelicula>
+    {
+         new Pelicula
+         {
+             Id = 3,
+             Titulo = "Avengers: Secret Wars",
+             FechaLanzamiento = new DateTime(2027,5,7)
+         },
+         new Pelicula
+         {
+             Id = 4,
+             Titulo = "The Batman - Part II",
+             FechaLanzamiento = new DateTime(2027,10,1)
+         }
+    };
+}

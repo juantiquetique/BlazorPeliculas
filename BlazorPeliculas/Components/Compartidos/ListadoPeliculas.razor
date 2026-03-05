@@ -1,0 +1,29 @@
+﻿<div>
+    @foreach(var pelicula in Peliculas)
+    {
+        <p>Título:<b>@pelicula.Titulo</b></p>
+        <p>Fecha Lanzamiento: <b>@pelicula.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
+    }
+</div>
+
+@code {
+
+    // 28. Creando nuestro primer componenete. EJEMPLO
+    // private List<Pelicula> peliculas = new List<Pelicula>
+    // {
+    //      new Pelicula 
+    //      { 
+    //          Id = 1, 
+    //          Titulo = "Captain America: Brave New World", 
+    //          FechaLanzamiento = new DateTime(2025,2,14)
+    //      },
+    //      new Pelicula 
+    //      { 
+    //          Id = 2, 
+    //          Titulo = "Mission: Impossible - Dead Reckoning Part two", 
+    //          FechaLanzamiento = new DateTime(2025,5,23)
+    //      }
+    // };
+
+    [Parameter] public required List<Pelicula> Peliculas { get; set; }
+}
