@@ -1,11 +1,12 @@
 ﻿@page "/"
 @attribute [StreamRendering]
+@rendermode InteractiveServer
 <PageTitle>Home</PageTitle>
 
-<BPBoton/>
-<BPBoton Variante="Variante.Advertencia" Tamaño="Tamaño.Lg"/>
+<BPBoton id="mi-boton" name="mi-boton" class="p-3"/>
+@* <BPBoton Variante="Variante.Advertencia" Tamaño="Tamaño.Lg"/>
 <BPBoton Variante="Variante.Error" Tamaño="Tamaño.Sm"/>
-<BPBoton Texto="Texto Personalizado" Disabled="true" Tipo="BotonTipo.Submit" Variante="Variante.Exitoso"/>
+<BPBoton Texto="Texto Personalizado" Disabled="true" Tipo="BotonTipo.Submit" Variante="Variante.Exitoso"/> *@
 
 <hr />
 
@@ -17,9 +18,19 @@
 
 
 @code {
-    
-    protected override async Task OnInitializedAsync()
+
+    // protected override async Task OnInitializedAsync()
+    // {
+
+    // }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if(!firstRender)
+        {
+            return;
+        }
+
         await Task.Delay(TimeSpan.FromSeconds(2));
         enCartelera = new List<Pelicula>
         {
@@ -53,8 +64,10 @@
              }
         };
 
+        StateHasChanged();
+
     }
-    
+
     private List<Pelicula>? enCartelera = null;
     private List<Pelicula>? futurosEstrenos = null;
 }
