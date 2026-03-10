@@ -1,4 +1,6 @@
-﻿<button type="@Tipo.ToString()" disabled="@Disabled" class="@ClaseCSS">@Texto</button>
+﻿<button @attributes="AtributosAdicionales"  type="@Tipo.ToString()" disabled="@Disabled" 
+class="@ClaseCSS" @onclick="EventoClick"
+>@Texto</button>
 
 @code {
     //recibe por defecto el valor "Enviar", pero se puede cambiar al usar el componente BPBoton en otro lugar, como por ejemplo en Home.razor
@@ -13,11 +15,25 @@
 
     [Parameter] public Variante Variante { get; set; } = Variante.Primario;
     [Parameter] public Tamaño Tamaño { get; set; } = Tamaño.Md;
+    [Parameter(CaptureUnmatchedValues = true)] 
+    public Dictionary<string, object>? AtributosAdicionales { get; set; } 
+
+    private void EventoClick()
+    {
+        Console.WriteLine("Hemos clickeado eel botón");
+    }
 
     private string ClaseCSS
     {
         get
         {
+            var clasesDeCSSPadre = string.Empty;
+
+            if (AtributosAdicionales is not null && AtributosAdicionales.ContainsKey("class"))
+            {
+                clasesDeCSSPadre = AtributosAdicionales["class"].ToString()!;
+            }
+
             string[] clases = [
                 "btn",
                 Variante switch {
@@ -33,11 +49,11 @@
                     Tamaño.Md => "btn-md",
                     Tamaño.Lg => "btn-lg",
                     _ => "btn-md"
-                }
+                },
+                clasesDeCSSPadre
             ];
 
             return string.Join(" ", clases);
         }
     }
-}
 }
