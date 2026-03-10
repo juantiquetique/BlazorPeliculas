@@ -8,9 +8,9 @@
 else
 {
     <div>
-        @foreach(var pelicula in Peliculas)
+        @foreach(var pelicula in peliculas)
         {
-            <PeliculaInfividual Pelicula="@pelicula"/>
+            <PeliculaInfividual @key="pelicula.Id" Pelicula="@pelicula" EliminarPelicula="EliminarPelicula"/>
         }
     </div>
 }
@@ -50,9 +50,26 @@ else
     // lo que indica que la propiedad Peliculas puede ser nula.Esto es útil para manejar casos 
     // en los que no se han cargado las películas o no hay datos disponibles, permitiendo 
     // mostrar un mensaje de carga o un mensaje indicando que no hay películas para mostrar.
-    
+
     // El EditorRequired es un atributo que se utiliza para indicar que la propiedad Peliculas es requerida en el editor de Blazor. 
     // Esto significa que cuando se utiliza el componente ListadoPeliculas en otro lugar, 
     // el editor de Blazor marcará esta propiedad como obligatoria y mostrará un error si no se proporciona un valor para ella.
     [Parameter, EditorRequired] public List<Pelicula>? Peliculas { get; set; }
+    private List<Pelicula> peliculas { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        peliculas = Peliculas!;
+    }
+
+    protected override void OnParametersSet()
+    {
+        peliculas = Peliculas!;
+    }
+
+
+    private void EliminarPelicula(Pelicula pelicula)
+    {
+        peliculas!.Remove(pelicula);
+    }
 }

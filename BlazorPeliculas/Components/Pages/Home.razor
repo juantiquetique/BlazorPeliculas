@@ -3,7 +3,11 @@
 @rendermode InteractiveServer
 <PageTitle>Home</PageTitle>
 
-<BPBoton id="mi-boton" name="mi-boton" class="p-3"/>
+@* De esta forma se puede manejar el evento OnClick sin necesidad de usar una función lambda, *@
+<BPBoton id="mi-boton" name="mi-boton" class="p-3" OnClick="ManejarClick"/>
+@* Pero si queremos pasar un mensaje personalizado al hacer click en el boton, entonces si es necesario usar una función lambda, como se muestra en el siguiente boton: *@
+<BPBoton Texto="Boton 2" OnClick="@(()=>ManejarClick("Clikeaste el boton 2"))"/>
+
 @* <BPBoton Variante="Variante.Advertencia" Tamaño="Tamaño.Lg"/>
 <BPBoton Variante="Variante.Error" Tamaño="Tamaño.Sm"/>
 <BPBoton Texto="Texto Personalizado" Disabled="true" Tipo="BotonTipo.Submit" Variante="Variante.Exitoso"/> *@
@@ -67,6 +71,13 @@
         StateHasChanged();
 
     }
+
+    private void ManejarClick()
+    {
+        Console.WriteLine("Evento desde el componente padre");
+    }
+
+    private void ManejarClick(string mensaje) => Console.WriteLine(mensaje);
 
     private List<Pelicula>? enCartelera = null;
     private List<Pelicula>? futurosEstrenos = null;

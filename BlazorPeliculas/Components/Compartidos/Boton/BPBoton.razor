@@ -1,5 +1,5 @@
 ﻿<button @attributes="AtributosAdicionales"  type="@Tipo.ToString()" disabled="@Disabled" 
-class="@ClaseCSS" @onclick="EventoClick"
+class="@ClaseCSS" @onclick="OnClick"
 >@Texto</button>
 
 @code {
@@ -16,12 +16,10 @@ class="@ClaseCSS" @onclick="EventoClick"
     [Parameter] public Variante Variante { get; set; } = Variante.Primario;
     [Parameter] public Tamaño Tamaño { get; set; } = Tamaño.Md;
     [Parameter(CaptureUnmatchedValues = true)] 
-    public Dictionary<string, object>? AtributosAdicionales { get; set; } 
+    public Dictionary<string, object>? AtributosAdicionales { get; set; }
 
-    private void EventoClick()
-    {
-        Console.WriteLine("Hemos clickeado eel botón");
-    }
+    //se crea parametro para recibir el evento OnClick desde el componente padre, como por ejemplo Home.razor
+    [Parameter] public EventCallback OnClick { get; set; }
 
     private string ClaseCSS
     {

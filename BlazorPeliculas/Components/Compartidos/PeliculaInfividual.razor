@@ -1,7 +1,10 @@
 ﻿<p>Título:<b>@Pelicula.Titulo</b></p>
+<BPBoton Texto="Borrar" OnClick="@(()=>EliminarPelicula.InvokeAsync(Pelicula))" />
+
 <p>Fecha Lanzamiento: <b>@Pelicula.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
 
 @code {
     // Parametros requeridos
     [Parameter, EditorRequired] public required Pelicula Pelicula { get; set; }
+    [Parameter] public EventCallback<Pelicula> EliminarPelicula { get; set; }
 }
