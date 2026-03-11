@@ -1,0 +1,14 @@
+﻿@page "/bind-evento"
+@rendermode InteractiveServer
+
+@* Implementación de Bind:event="oninput" lo que hace que al ingresar 
+algo al input inmediatamente se muestre al tiempo de ir ingresando valore*@
+<input @bind="valor" @bind:event="oninput"/>
+
+<p>
+    El valor  es: @valor
+</p>
+
+@code {
+    string? valor;
+}

@@ -1,0 +1,21 @@
+﻿@page "/bind-get-set"
+@rendermode InteractiveServer
+
+@* Implementación de Bind:get="" y Bind:set="" : el solo @bind hace las dos cosas sincornizando campo y variable,
+pero cuando necesito hacer un cambio en una variable es necesario las dos para que una obtenga el valor (get) para ponerlo al input 
+y la otra para setear el valor (set) al input, en este caso se hace un cambio a mayusculas al valor que se ingresa en el input con el SetAsync *@
+<input @bind:get="valor" @bind:set="SetAsync" @bind:event="oninput" />
+
+<p>
+    El valor  es: @valor
+</p>
+
+@code {
+    string valor = string.Empty;
+
+    private Task SetAsync(string texto)
+    {
+        valor = texto.ToUpper();
+        return Task.CompletedTask;
+    }
+}

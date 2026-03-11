@@ -1,10 +1,10 @@
 ﻿<button @attributes="AtributosAdicionales"  type="@Tipo.ToString()" disabled="@Disabled" 
 class="@ClaseCSS" @onclick="OnClick"
->@Texto</button>
+>@ChildContent</button>
 
 @code {
     //recibe por defecto el valor "Enviar", pero se puede cambiar al usar el componente BPBoton en otro lugar, como por ejemplo en Home.razor
-    [Parameter] public required string Texto { get; set; } = "Enviar";
+    // [Parameter] public required string Texto { get; set; } = "Enviar";
 
     //valor por defecto de un bool es false
     [Parameter] public bool Disabled { get; set; }
@@ -20,6 +20,12 @@ class="@ClaseCSS" @onclick="OnClick"
 
     //se crea parametro para recibir el evento OnClick desde el componente padre, como por ejemplo Home.razor
     [Parameter] public EventCallback OnClick { get; set; }
+
+    //esto permite que el componente BPBoton pueda recibir contenido hijo, 
+    // como por ejemplo el texto "Mi texto personalizado" que se le pasa al 
+    // usar el componente en Home.razor, y si no se le pasa ningún contenido hijo, 
+    // entonces se mostrará el texto por defecto "Enviar"
+    [Parameter] public RenderFragment? ChildContent { get; set; } = @<text>Enviar</text>;
 
     private string ClaseCSS
     {
