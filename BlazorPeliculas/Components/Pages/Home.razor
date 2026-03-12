@@ -1,7 +1,12 @@
 ﻿@page "/"
 @attribute [StreamRendering]
 @rendermode InteractiveServer
+@inject ServicioSingleton singleton
+@inject IServicioPeliculas servicioPeliculas
+
 <PageTitle>Home</PageTitle>
+
+<p>Singleton count: @singleton.valor</p>
 
 @* De esta forma se puede manejar el evento OnClick sin necesidad de usar una función lambda, *@
 <BPBoton id="mi-boton" name="mi-boton" class="p-3" OnClick="ManejarClick"/>
@@ -45,37 +50,8 @@ Mostrar películas
         }
 
         await Task.Delay(TimeSpan.FromSeconds(2));
-        enCartelera = new List<Pelicula>
-        {
-             new Pelicula
-             {
-                 Id = 1,
-                 Titulo = "Captain America: Brave New World",
-                 FechaLanzamiento = new DateTime(2025,2,14)
-             },
-             new Pelicula
-             {
-                 Id = 2,
-                 Titulo = "Mission: Impossible - Dead Reckoning Part two",
-                 FechaLanzamiento = new DateTime(2025,5,23)
-             }
-        };
-
-        futurosEstrenos = new List<Pelicula>
-        {
-             new Pelicula
-             {
-                 Id = 3,
-                 Titulo = "Avengers: Secret Wars",
-                 FechaLanzamiento = new DateTime(2027,5,7)
-             },
-             new Pelicula
-             {
-                 Id = 4,
-                 Titulo = "The Batman - Part II",
-                 FechaLanzamiento = new DateTime(2027,10,1)
-             }
-        };
+        enCartelera = servicioPeliculas.ObternerPeliculas();
+        futurosEstrenos = servicioPeliculas.ObternerPeliculas();
 
         StateHasChanged();
 
