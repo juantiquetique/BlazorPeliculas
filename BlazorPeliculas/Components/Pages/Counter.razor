@@ -1,29 +1,23 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
-@inject ServicioSingleton singleton
-@inject ServicioTransient transient
-@inject ServicioScoped scoped2
 
-<PageTitle>Counter</PageTitle>
+<PageTitle>Counter (@currentCount)</PageTitle>
 
 <h1>Counter</h1>
 
 <p role="status">Current count: @currentCount</p>
+
 <p>Singleton count: @singleton.valor</p>
+
+@* el SectionName permite pasar string *@
+@* <SectionContent SectionName="top-bar">
+    <p>Singleton count: @singleton.valor</p>
+</SectionContent> *@
+
+
 <p>Transient count: @transient.valor</p>
 <p>Scoped count: @scoped2.valor</p>
 
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
-@code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
-    {
-        currentCount++;
-        transient.valor = currentCount;
-        singleton.valor = currentCount;
-        scoped2.valor = currentCount;
-    }
-}
