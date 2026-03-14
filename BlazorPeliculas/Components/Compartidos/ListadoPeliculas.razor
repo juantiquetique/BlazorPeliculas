@@ -1,4 +1,5 @@
-﻿@* @if (Peliculas is null)
+﻿@using BlazorPeliculas.Utilidades
+@* @if (Peliculas is null)
 {
     @Cargando    
 } else if (Peliculas.Count == 0)
@@ -23,6 +24,7 @@ else
         <p>Fecha Lanzamiento: <b>@pelicula.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
     }
 </div> *@
+@inject IJSRuntime JS
 
 <ListadoGenerico Listado="peliculas">
         <PeliculaInfividual @key="context.Id" Pelicula="@context" EliminarPelicula="EliminarPelicula"/>
@@ -77,8 +79,15 @@ else
     }
 
 
-    private void EliminarPelicula(Pelicula pelicula)
+    private async Task EliminarPelicula(Pelicula pelicula)
     {
-        peliculas!.Remove(pelicula);
+        //esto es para invocar metodos de JavaScript desde Blazor, en este caso el método confirm para mostrar un cuadro de diálogo de confirmación al usuario antes de eliminar la película.
+        // tambien se crea la clase IJSRuntimeExtensionMethods en BlazorPeliculas.Utilidades con el método Confirm para construir el mensaje de confirmación de manera más estructurada y reutilizable.
+        var mensaje = $"¿Desea borrar la película {pelicula.Titulo}?";
+        var confirmado = await JS.InvokeAsync<bool>("confirm", JS.Confirm(mensaje) );
+        if (confirmado)
+        {
+            peliculas!.Remove(pelicula);
+        }
     }
 }
