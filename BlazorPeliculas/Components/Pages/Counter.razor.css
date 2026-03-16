@@ -1,0 +1,5 @@
+﻿/* alistamiento de css */
+/*El ::deep se aplica solo a los elementos hijos, por lo tanto deberia de estar dentro de un div caso de que no lo sea*/
+::deep h1 {
+    color: red;
+}

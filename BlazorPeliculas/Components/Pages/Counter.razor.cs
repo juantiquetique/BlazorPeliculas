@@ -8,8 +8,16 @@ public partial class Counter (ServicioSingleton singleton, ServicioTransient tra
 {
     private int currentCount = 0;
     private static int currentCountStatic = 0;
-    private async Task IncrementCount()
+
+    IJSObjectReference? moduloCounter;
+
+    [JSInvokable]
+    public async Task IncrementCount()
     {
+        moduloCounter = await JS.InvokeAsync<IJSObjectReference>("import", "./js/counter.js");
+
+        await moduloCounter.InvokeVoidAsync("mostrarAlerta", "Vas a incrementar el contador ");
+
         currentCount++;
         currentCountStatic = currentCount;
         transient.valor = currentCount;
@@ -18,6 +26,13 @@ public partial class Counter (ServicioSingleton singleton, ServicioTransient tra
         await JS.InvokeVoidAsync("obtenerCurrentCount");
     }
 
+    //Ejemplos de metodo de instancia
+    public async Task IncrementCountJavaScript()
+    {
+        await JS.InvokeVoidAsync("invocarIncrementCount", DotNetObjectReference.Create(this));
+    }
+
+    //ejemplo de metodo estatico
     [JSInvokable]
     public static Task<int> ObtenerCurrentCount()
     {

@@ -12,7 +12,7 @@ public class ServicioPeliculasEnMemoria : IServicioPeliculas
              {
                  Id = 1,
                  Titulo = "Captain America: Brave New World",
-                 FechaLanzamiento = new DateTime(2025,2,14)
+                 FechaLanzamiento = null //new DateTime(2025,2,14)
              },
              new Pelicula
              {

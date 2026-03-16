@@ -1,7 +1,13 @@
-﻿function obtenerCurrentCount() {
+﻿//con metodo statico
+function obtenerCurrentCount() {
     //proyecto, método a llamar
-    DotNet.invokeMethodAsync('BlazorPeliculas', 'ObtenerCurrentCount')
+    DotNet.invokeMethodAsync("BlazorPeliculas", "ObtenerCurrentCount")
         .then(resultado => {
-            conle.log(`Conteo desde JS: ${resultado}`)
+            console.log(`Conteo desde JS: ${resultado}`);
         })
+}
+
+//con metodo de instancia
+function invocarIncrementCount(dotnetHelper) {
+    dotnetHelper.invokeMethodAsync("IncrementCount");
 }

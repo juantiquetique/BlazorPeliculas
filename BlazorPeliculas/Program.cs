@@ -14,6 +14,16 @@ builder.Services.AddScoped<ServicioScoped>();
 
 builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculasEnMemoria>();
 
+//builder.Services.AddCascadingValue(sp => new AppState());
+
+builder.Services.AddScoped<AppStateService>();
+
+builder.Services.AddCascadingValue(sp =>
+{ 
+    var state = sp.GetRequiredService<AppStateService>();
+    return state.Source;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

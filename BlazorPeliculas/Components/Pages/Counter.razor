@@ -1,9 +1,16 @@
 ﻿@page "/counter"
+@using BlazorPeliculas.Components.Pages.Ejemplos
 @rendermode InteractiveServer
 
 <PageTitle>Counter (@currentCount)</PageTitle>
 
-<h1>Counter</h1>
+@* se pone en medio de un div para aplique a los elementos hijos con el ::deep del css para dar el estilo a estos *@
+@* alistamiento de css *@
+<div>
+    <h1>Counter</h1>
+
+    <Header1></Header1>
+</div>
 
 <p role="status">Current count: @currentCount</p>
 
@@ -20,4 +27,6 @@
 
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+@* ejemplo de metodo de instancia *@
+<button class="btn btn-primary" @onclick="IncrementCountJavaScript">Click me JavaScript</button>
 

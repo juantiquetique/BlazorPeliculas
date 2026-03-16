@@ -26,8 +26,19 @@ else
 </div> *@
 @inject IJSRuntime JS
 
+@* se atrapa el error con el componente ErrorBoundary, el cual es un componente de Blazor
+que se utiliza para manejar errores de forma personalizada en la interfaz de usuario. *@
 <ListadoGenerico Listado="peliculas">
-        <PeliculaInfividual @key="context.Id" Pelicula="@context" EliminarPelicula="EliminarPelicula"/>
+    <ErrorBoundary>
+        <ChildContent>                
+            <PeliculaInfividual @key="context.Id" Pelicula="@context" EliminarPelicula="EliminarPelicula"/>
+        </ChildContent>
+        <ErrorContent Context="error">
+            <hr />
+                La pelicula no pudo ser cargada...
+            <hr />
+        </ErrorContent>
+    </ErrorBoundary>
 </ListadoGenerico>
 
 
@@ -67,6 +78,9 @@ else
     [Parameter] public RenderFragment? NoHayRegistros { get; set; } =@<text>No existen Películas para mostrar...</text>;
 
     private List<Pelicula> peliculas { get; set; } = null!;
+
+    @* se crea la funciona a ejecutar mendiante la referencia a un componente para poder manipularlo facilmente*@
+    public void LimpiarPeliculas() => peliculas?.Clear();
 
     protected override void OnInitialized()
     {
