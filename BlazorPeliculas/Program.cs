@@ -8,21 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddTransient<ServicioTransient>();
-builder.Services.AddSingleton<ServicioSingleton>();
-builder.Services.AddScoped<ServicioScoped>();
-
 builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculasEnMemoria>();
-
-//builder.Services.AddCascadingValue(sp => new AppState());
-
-builder.Services.AddScoped<AppStateService>();
-
-builder.Services.AddCascadingValue(sp =>
-{ 
-    var state = sp.GetRequiredService<AppStateService>();
-    return state.Source;
-});
 
 var app = builder.Build();
 

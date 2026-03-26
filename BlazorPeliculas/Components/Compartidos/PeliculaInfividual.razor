@@ -1,10 +1,11 @@
-﻿<p>Título:<b>@Pelicula.Titulo</b></p>
-<BPBoton Variante="Variante.Error" OnClick="@(()=>EliminarPelicula.InvokeAsync(Pelicula))">Borrar</BPBoton>
-
-<p>Fecha Lanzamiento: <b>@Pelicula.FechaLanzamiento.Value.ToString("dd MMM yyyy")</b></p>
+﻿<img src="@Pelicula.PosterURL" class="img-fluid mb-2 w-100" style="height: 300px" />
+<div class="card-body p-2">
+    <div class="fw-semibold">
+        @Pelicula.Titulo
+    </div>
+</div>
 
 @code {
     // Parametros requeridos
     [Parameter, EditorRequired] public required Pelicula Pelicula { get; set; }
-    [Parameter] public EventCallback<Pelicula> EliminarPelicula { get; set; }
 }

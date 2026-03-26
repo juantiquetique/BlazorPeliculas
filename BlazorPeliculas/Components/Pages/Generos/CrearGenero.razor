@@ -1,0 +1,25 @@
+﻿@page "/generos/crear"
+@rendermode InteractiveServer
+
+<h3>CrearGenero</h3>
+
+<EditForm Model="genero" OnSubmit="Crear">
+    <div class="mb-3">
+        <label>Nombre:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@genero.Nombre"/>
+        </div>
+    </div>
+
+    <BPBoton Tipo="BotonTipo.Submit"/>
+</EditForm>
+
+@code {
+    private Genero genero = new Genero();
+
+    private void Crear()
+    {
+        Console.WriteLine("Ejecutadno método Crear");
+        Console.WriteLine($"Nombre del género: {genero.Nombre}");
+    }
+}

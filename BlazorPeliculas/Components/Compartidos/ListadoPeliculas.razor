@@ -1,69 +1,36 @@
 ﻿@using BlazorPeliculas.Utilidades
-@* @if (Peliculas is null)
-{
-    @Cargando    
-} else if (Peliculas.Count == 0)
-{
-    @NoHayRegistros
-}
-else
-{
-    <div>
-        @foreach(var pelicula in peliculas)
-        {
-            <PeliculaInfividual @key="pelicula.Id" Pelicula="@pelicula" EliminarPelicula="EliminarPelicula"/>
-        }
-    </div>
-} *@
-
-@* esto sabiendo que el componente ListadoPeliculas se va a reutilizar para mostrar diferentes listas de películas, y que es seguro que si tiene ==*@ 
-@* <div>
-    @foreach (var pelicula in Peliculas)
-    {
-        <p>Título:<b>@pelicula.Titulo</b></p>
-        <p>Fecha Lanzamiento: <b>@pelicula.FechaLanzamiento.ToString("dd MMM yyyy")</b></p>
-    }
-</div> *@
 @inject IJSRuntime JS
 
-@* se atrapa el error con el componente ErrorBoundary, el cual es un componente de Blazor
-que se utiliza para manejar errores de forma personalizada en la interfaz de usuario. *@
-<ListadoGenerico Listado="peliculas">
-    <ErrorBoundary>
-        <ChildContent>                
-            <PeliculaInfividual @key="context.Id" Pelicula="@context" EliminarPelicula="EliminarPelicula"/>
-        </ChildContent>
-        <ErrorContent Context="error">
-            <hr />
-                La pelicula no pudo ser cargada...
-            <hr />
-        </ErrorContent>
-    </ErrorBoundary>
-</ListadoGenerico>
-
+<div class="my-4">
+    <div class="row g-4 text-center">
+        @* se atrapa el error con el componente ErrorBoundary, el cual es un componente de Blazor
+        tiliza para manejar errores de forma personalizada en la interfaz de usuario. *@
+        <ListadoGenerico Listado="Peliculas">
+            <ErrorBoundary>
+                <ChildContent>
+                    <div class="col col-sm-4 col-md-3 col-lg-2">
+                        <div class="h-100">
+                            <PeliculaInfividual Pelicula="context" @key="context.Id" />
+                        </div>
+                    </div>
+                </ChildContent>
+                <ErrorContent Context="error">
+                    <div class="col col-sm-4 col-md-3 col-lg-2">
+                        <div class="h-100">
+                            <div class="card-body p-2">
+                                <div class="fw-semibold">
+                                    Error mostrando la película...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ErrorContent>
+            </ErrorBoundary>
+        </ListadoGenerico>
+    </div>
+</div>
 
 @code {
-
-    // 28. Creando nuestro primer componenete. EJEMPLO
-    // private List<Pelicula> peliculas = new List<Pelicula>
-    // {
-    //      new Pelicula 
-    //      { 
-    //          Id = 1, 
-    //          Titulo = "Captain America: Brave New World", 
-    //          FechaLanzamiento = new DateTime(2025,2,14)
-    //      },
-    //      new Pelicula 
-    //      { 
-    //          Id = 2, 
-    //          Titulo = "Mission: Impossible - Dead Reckoning Part two", 
-    //          FechaLanzamiento = new DateTime(2025,5,23)
-    //      }
-    // };
-
-    // esto sabiendo que el componente ListadoPeliculas se va a reutilizar para mostrar diferentes listas de películas, y que es seguro que si tiene ==
-    // [Parameter] public required List<Pelicula> Peliculas { get; set; }
-
     // acepta nulos, por eso el signo de interrogación después del tipo de dato List<Pelicula>?, 
     // lo que indica que la propiedad Peliculas puede ser nula.Esto es útil para manejar casos 
     // en los que no se han cargado las películas o no hay datos disponibles, permitiendo 
@@ -73,35 +40,4 @@ que se utiliza para manejar errores de forma personalizada en la interfaz de usu
     // Esto significa que cuando se utiliza el componente ListadoPeliculas en otro lugar, 
     // el editor de Blazor marcará esta propiedad como obligatoria y mostrará un error si no se proporciona un valor para ella.
     [Parameter, EditorRequired] public List<Pelicula>? Peliculas { get; set; }
-
-    [Parameter] public RenderFragment? Cargando { get; set; } =@<Cargando/>;
-    [Parameter] public RenderFragment? NoHayRegistros { get; set; } =@<text>No existen Películas para mostrar...</text>;
-
-    private List<Pelicula> peliculas { get; set; } = null!;
-
-    @* se crea la funciona a ejecutar mendiante la referencia a un componente para poder manipularlo facilmente*@
-    public void LimpiarPeliculas() => peliculas?.Clear();
-
-    protected override void OnInitialized()
-    {
-        peliculas = Peliculas!;
-    }
-
-    protected override void OnParametersSet()
-    {
-        peliculas = Peliculas!;
-    }
-
-
-    private async Task EliminarPelicula(Pelicula pelicula)
-    {
-        //esto es para invocar metodos de JavaScript desde Blazor, en este caso el método confirm para mostrar un cuadro de diálogo de confirmación al usuario antes de eliminar la película.
-        // tambien se crea la clase IJSRuntimeExtensionMethods en BlazorPeliculas.Utilidades con el método Confirm para construir el mensaje de confirmación de manera más estructurada y reutilizable.
-        var mensaje = $"¿Desea borrar la película {pelicula.Titulo}?";
-        var confirmado = await JS.InvokeAsync<bool>("confirm", JS.Confirm(mensaje) );
-        if (confirmado)
-        {
-            peliculas!.Remove(pelicula);
-        }
-    }
 }

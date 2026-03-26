@@ -1,83 +1,23 @@
 ﻿@page "/"
 @attribute [StreamRendering]
-@rendermode InteractiveServer
-@inject ServicioSingleton singleton
 @inject IServicioPeliculas servicioPeliculas
 
-<PageTitle>Home 2</PageTitle>
+<PageTitle>Home</PageTitle>
 
-<HeadContent>
-    <meta name="description" content="Pagina para visualizar Peliculas." />
-</HeadContent>
+@* con el @ref se hace referencia a un componente para poder manipularlo facilmente *@
+<h3>En Cartelera</h3>
+<ListadoPeliculas Peliculas="enCartelera"/>
 
-<p>Singleton count: @singleton.valor</p>
-
-@* De esta forma se puede manejar el evento OnClick sin necesidad de usar una función lambda, *@
-<BPBoton id="mi-boton" name="mi-boton" class="p-3" OnClick="ManejarClick"/>
-@* Pero si queremos pasar un mensaje personalizado al hacer click en el boton, entonces si es necesario usar una función lambda, como se muestra en el siguiente boton: *@
-<BPBoton OnClick="@(()=>ManejarClick("Clikeaste el boton 2"))">Mi texto personalizado</BPBoton>
-
-@* <BPBoton Variante="Variante.Advertencia" Tamaño="Tamaño.Lg"/>
-<BPBoton Variante="Variante.Error" Tamaño="Tamaño.Sm"/>
-<BPBoton Texto="Texto Personalizado" Disabled="true" Tipo="BotonTipo.Submit" Variante="Variante.Exitoso"/> *@
-
-<hr />
-
-@* Data binding basico (@bind)*@
-<input type="checkbox" @bind="mostrarPeliculas" />
-Mostrar películas
-
-@if(mostrarPeliculas)
-{
-    <BPBoton OnClick="LimpiarPeliculas">
-        Limpiar Peliculas en cartelera
-    </BPBoton>
-
-    @* con el @ref se hace referencia a un componente para poder manipularlo facilmente *@
-    <h3>En Cartelera</h3>
-    <ListadoPeliculas Peliculas="enCartelera" @ref="listadoPeliculas"/>
-
-    <h3>Futuros Estrenos</h3>
-    <ListadoPeliculas Peliculas="futurosEstrenos"/>    
-}
+<h3>Futuros Estrenos</h3>
+<ListadoPeliculas Peliculas="futurosEstrenos"/>    
 
 
 @code {
-
-    // protected override async Task OnInitializedAsync()
-    // {
-
-    // }
-
-    private bool mostrarPeliculas = true;
-
-    @* se crea la variable para la referencia a un componente para poder manipularlo facilmente*@
-    private ListadoPeliculas? listadoPeliculas;
-    @* se llama con la referencia la funcion a ejecutar para un componente para poder manipularlo facilmente*@
-    public void LimpiarPeliculas() => listadoPeliculas?.LimpiarPeliculas();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnInitialized()
     {
-        if(!firstRender)
-        {
-            return;
-        }
-
-        await Task.Delay(TimeSpan.FromSeconds(2));
         enCartelera = servicioPeliculas.ObternerPeliculas();
         futurosEstrenos = servicioPeliculas.ObternerPeliculas();
-
-        StateHasChanged();
-
     }
-
-    private void ManejarClick()
-    {
-        Console.WriteLine("Evento desde el componente padre");
-        mostrarPeliculas = !mostrarPeliculas;
-    }
-
-    private void ManejarClick(string mensaje) => Console.WriteLine(mensaje);
 
     private List<Pelicula>? enCartelera = null;
     private List<Pelicula>? futurosEstrenos = null;
