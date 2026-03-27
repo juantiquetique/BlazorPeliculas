@@ -1,25 +1,58 @@
 ﻿@page "/generos/crear"
 @rendermode InteractiveServer
+@implements IDisposable
 
 <h3>CrearGenero</h3>
 
-<EditForm Model="genero" OnSubmit="Crear">
-    <div class="mb-3">
-        <label>Nombre:</label>
-        <div>
-            <InputText class="form-control" @bind-Value="@genero.Nombre"/>
-        </div>
-    </div>
-
-    <BPBoton Tipo="BotonTipo.Submit"/>
+@* OnValidSubmit es cuando se ha cumplido con todas las reglas de las validaciones *@
+@* EditContext: me permite obtener varios datos, uno de ellos es si el formulario es valido o no de manera programatica *@
+<EditForm EditContext="editContext" OnValidSubmit="Crear">
+    <DataAnnotationsValidator />
+    <BPInputText Label="Nombre" @bind-Value="@genero.Nombre" />
+    <BPBoton Tipo="BotonTipo.Submit" Disabled="formularioInvalido || posteoEnCurso">
+        @(posteoEnCurso ?@<text>Enviando...</text> : @<text>Enviar</text>)
+    </BPBoton>
 </EditForm>
 
 @code {
-    private Genero genero = new Genero();
+    private Genero genero = null!;
+    private EditContext? editContext;
+    private bool formularioInvalido = true;
+    private bool posteoEnCurso = false;
 
-    private void Crear()
+    protected override void OnInitialized()
     {
-        Console.WriteLine("Ejecutadno método Crear");
-        Console.WriteLine($"Nombre del género: {genero.Nombre}");
+        genero = new Genero();
+        editContext = new(genero);
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        if(editContext is not null)
+        {
+            formularioInvalido = !editContext.Validate();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Crear()
+    {
+        if (!posteoEnCurso)
+        {            
+            posteoEnCurso = true;
+            Console.WriteLine("Ejecutadno método Crear");
+            await Task.Delay(2000);
+            Console.WriteLine($"Nombre del género: {genero.Nombre}");
+            posteoEnCurso = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        if(editContext is not null)
+        {
+            editContext.OnFieldChanged -= HandleFieldChanged;
+        }
     }
 }
