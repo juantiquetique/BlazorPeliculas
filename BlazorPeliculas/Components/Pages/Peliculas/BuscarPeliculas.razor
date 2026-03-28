@@ -1,0 +1,48 @@
+﻿@page "/peliculas/buscar"
+
+<h3>Buscar Películas</h3>
+
+<div class="top-row g-3 align-items-center mb-3">
+    <div class="col-sm-3">
+        <input type="text" class="form-control" id="titulo" placeholder="Título Película"
+                @bind="titulo" @bind:event="oninput"
+                @onkeypress="@((KeyboardEventArgs e)=> TituloKeyPress(e))"
+                autocomplete="off"/>
+    </div>
+    <div class="col-sm-3">
+        <select class="form-select" @bind="generoId">
+            <option value="0">-- Seleccione un género --</option>
+            @foreach (var item in generos)
+            {
+                <option value="@item.Id">@item.Nombre</option>
+            }
+        </select>
+    </div>
+    <div class="col-sm-6 d-flex">
+
+    </div>
+</div>
+
+@code {
+    private string titulo = "";
+    private int generoId = 0;
+    private List<Genero> generos = new List<Genero>();
+
+    protected override void OnInitialized()
+    {
+        // Simulación de carga de géneros desde una fuente de datos
+        generos = new List<Genero>{ 
+            new(){ Id = 1, Nombre = "Acción" },
+            new(){ Id = 2, Nombre = "Drama"}
+        };
+    }
+
+    private void TituloKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            // Lógica para buscar películas por título
+            Console.WriteLine($"Buscando películas con el título: {titulo}");
+        }
+    }
+}

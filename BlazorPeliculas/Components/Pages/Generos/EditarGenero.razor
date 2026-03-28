@@ -1,9 +1,47 @@
 ﻿@page "/generos/editar/{Id:int}"
 
-<h3>EditarGenero</h3>
+@inject NavigationManager navigationManager
 
-El Id es: @Id
+<h3>Editar Género</h3>
+
+@if (genero is null)
+{
+    <Cargando />
+}
+else
+{
+    @* porque esto?: FormularioInvalido="false" porque si estoy editando un genero y 
+    estoy tomando ese genero de la base de datos se puede entender que ese genero ya 
+    fue validado por tanto el estado incial de este formulario es que no es invalido, 
+    por lo tanto el valor inical es false  *@
+    <FormularioGenero FormularioPosteadoConExito="formularioPosteadoConExito"
+                      PosteoEnCurso="posteoEnCurso" FormularioInvalido="false"
+                      OnValidSubmit="Editar" Genero="genero" />
+}
 
 @code {
     [Parameter] public int Id { get; set; }
+    private Genero genero = null!;
+    private bool formularioPosteadoConExito = false;
+    private bool posteoEnCurso = false;
+
+    protected override void OnInitialized()
+    {
+        genero = new() { Id = Id, Nombre = "Acción" };
+    }
+
+    private async Task Editar()
+    {
+        if (!posteoEnCurso)
+        {
+            posteoEnCurso = true;
+            Console.WriteLine("Ejecutadno método Editar");
+            await Task.Delay(2000);
+            Console.WriteLine($"Nombre del género: {genero.Nombre}");
+            posteoEnCurso = false;
+            formularioPosteadoConExito = true;
+            StateHasChanged();
+            navigationManager.NavigateTo("/generos");
+        }
+    }
 }
