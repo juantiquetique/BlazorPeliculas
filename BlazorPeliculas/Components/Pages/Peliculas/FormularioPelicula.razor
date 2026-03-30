@@ -1,0 +1,18 @@
+﻿<FormularioEntidad Entidad="Pelicula" FormularioPosteadoConExito="FormularioPosteadoConExito"
+                   PosteoEnCurso="PosteoEnCurso" OnValidSubmit="OnValidSubmit"
+                   FormularioInvalido="FormularioInvalido">
+    <BPInputText Label="Titulo" @bind-Value="@Pelicula.Titulo" />
+    <BPInputText Label="Trailer" @bind-Value="@Pelicula.Trailer" />
+    <BPInputDate Label="Fecha de Lanzamiento" @bind-Value="@Pelicula.FechaLanzamiento"/>
+    <BPCheckbox Label="En Cartelera" @bind-Value="@Pelicula.EnCartelera" />
+    <InputImg Label="Poster" ImagenSeleccionada="archivo => Pelicula.PosterArchivo = archivo" ImagenURL="@Pelicula.PosterURL" />
+
+</FormularioEntidad>
+
+@code {
+    [Parameter, EditorRequired] public Pelicula Pelicula { get; set; } = null!;
+    [Parameter, EditorRequired] public bool FormularioPosteadoConExito { get; set; } = false;
+    [Parameter, EditorRequired] public bool PosteoEnCurso { get; set; } = false;
+    [Parameter, EditorRequired] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public bool FormularioInvalido { get; set; } = true;
+}

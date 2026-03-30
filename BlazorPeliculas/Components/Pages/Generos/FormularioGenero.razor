@@ -1,83 +1,13 @@
-﻿@inject IJSRuntime JS
-@implements IDisposable
-
-<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>
-
-@* OnValidSubmit es cuando se ha cumplido con todas las reglas de las validaciones *@
-@* EditContext: me permite obtener varios datos, uno de ellos es si el formulario es valido o no de manera programatica *@
-<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
+﻿<FormularioEntidad Entidad="Genero" FormularioPosteadoConExito="FormularioPosteadoConExito"
+    PosteoEnCurso="PosteoEnCurso" OnValidSubmit="OnValidSubmit"
+        FormularioInvalido="FormularioInvalido">
     <BPInputText Label="Nombre" @bind-Value="@Genero.Nombre" />
-    <BPBoton Tipo="BotonTipo.Submit" Disabled="formularioInvalido || PosteoEnCurso">
-        @(PosteoEnCurso ?@<text>Enviando...</text> : @<text>Enviar</text>)
-    </BPBoton>
-</EditForm>
+</FormularioEntidad>
 
 @code {
-    private EditContext? editContext;
-    private bool formularioInvalido = true;
-
     [Parameter, EditorRequired] public Genero Genero { get; set; } = null!;
     [Parameter, EditorRequired] public bool FormularioPosteadoConExito { get; set; } = false;
     [Parameter, EditorRequired] public bool PosteoEnCurso { get; set; } = false;
     [Parameter, EditorRequired] public EventCallback OnValidSubmit{ get; set; }
     [Parameter] public bool FormularioInvalido { get; set; } = true;
-
-    protected override void OnInitialized()
-    {        
-        editContext = new(Genero);
-        editContext.OnFieldChanged += HandleFieldChanged;
-        formularioInvalido = FormularioInvalido;
-    }
-
-    //esto sirve para validar el formulario cada vez que se cambia un campo, 
-    //entonces se llama a Validate() para validar el formulario y si es valido devuelve true,
-    //si no es valido devuelve false, 
-    //Entonces se niega (!) para que se convierta en false (caso de ser true) y asi no dejarlo entrar al return
-    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
-    {
-        if (editContext is not null)
-        {
-            formularioInvalido = !editContext.Validate();
-            StateHasChanged();
-        }
-    }
-
-    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
-    {
-        // Si el formulario fue modificado (true), entonces lo niega (!) para que se convierta en false y asi no dejarlo entrar al return 
-        // porque SI se modifico el formulario
-        var formularioFueEditado = editContext!.IsModified();
-        if (!formularioFueEditado)
-        {
-            return;
-        }
-
-        // Si el formulario fue posteado con exito, entonces no se le pregunta al usuario si desea abandonar la página, 
-        // porque ya se guardaron los cambios entonces lo retorna
-        if (FormularioPosteadoConExito)
-        {
-            return;
-        }
-
-        var confirmado = await JS.Confirm("¿Desea abandonar la página? Se perderán los cambios no guardados.");
-        //Si acepta es TRUE, si cancela es FALSE
-        //Entonces si es true (acepta) entra se retorna y se le permite abandonar la página, 
-        //si es false (cancela) no entra y se le niega el acceso a abandonar la página
-        if (confirmado)
-        {
-            return;
-        }
-
-        // Si el usuario cancela, se le niega el acceso a abandonar la página y que se quede en la misma página
-        context.PreventNavigation();
-    }
-
-    public void Dispose()
-    {
-        if (editContext is not null)
-        {
-            editContext.OnFieldChanged -= HandleFieldChanged;
-        }
-    }
 }

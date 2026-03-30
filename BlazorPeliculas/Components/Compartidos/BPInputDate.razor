@@ -1,0 +1,23 @@
+﻿@using System.Linq.Expressions
+
+<div class="mb-3">
+    <label for="@Id">@Label:</label>
+    <div>
+        <InputDate class="form-control" id="@Id" Value="@Value" 
+        ValueChanged="ValueChanged" ValueExpression="ValueExpression"
+        autcomplete="off" />
+        <ValidationMessage For="@ValueExpression" />
+    </div>
+
+</div>
+
+@code {
+    private string Id { get; set; } = Guid.NewGuid().ToString();
+    [Parameter, EditorRequired] public string Label { get; set; }
+    // El valor (value) es el valor que tiene la propiedad que quiero sincronizar con el input
+    [Parameter] public DateTime? Value { get; set; }
+    // el cambio del valor (ValueChaged) me permite reaccionar al cambio del valor del input y pasarle el nuevo valor al componente padre
+    [Parameter] public EventCallback<DateTime?> ValueChanged { get; set; }
+    // una expresion del valor del input (ValueExpresion) es el que permite indicar que campo del modelo estoy vinculando al input
+    [Parameter] public Expression<Func<DateTime?>> ValueExpression { get; set; } = null!;
+}

@@ -1,0 +1,15 @@
+﻿<div class="form-check">
+    <input type="checkbox" class="form-check-input" id="@Id" checked="@Value" @onchange="OnChanged" />
+    <label class="form-check-label" for="@Id">@Label</label>
+</div>
+
+@code {
+    private string Id { get; set; } = Guid.NewGuid().ToString();
+    [Parameter, EditorRequired] public string Label { get; set; }
+    // El valor (value) es el valor que tiene la propiedad que quiero sincronizar con el checkbox
+    [Parameter] public bool Value { get; set; }
+    // el cambio del valor (ValueChaged) me permite reaccionar al cambio del valor del input y pasarle el nuevo valor al componente padre
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+    // una expresion del valor del input (ValueExpresion) es el que permite indicar que campo del modelo estoy vinculando al input
+    private Task OnChanged(ChangeEventArgs e)=>ValueChanged.InvokeAsync((bool)e.Value!);
+}

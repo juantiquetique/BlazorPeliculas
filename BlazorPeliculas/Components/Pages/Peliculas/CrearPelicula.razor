@@ -4,13 +4,36 @@
 
 <h3>CrearPelicula</h3>
 
-<BPBoton OnClick="Crear">Crear película</BPBoton>
+<FormularioPelicula FormularioPosteadoConExito="formularioPosteadoConExito"
+    PosteoEnCurso="posteoEnCurso"
+    OnValidSubmit="Crear" Pelicula="pelicula"/>
 
 @code {
-    void Crear()
+    private bool formularioPosteadoConExito = false;
+    private bool posteoEnCurso = false;
+    private Pelicula pelicula = null!;
+
+    protected override void OnInitialized()
     {
-        //guardo la película en la base de datos...
-        navigationManager.NavigateTo("/peliculas");
+        pelicula = new();
+    }
+
+    private async Task Crear()
+    {
+        if (!posteoEnCurso)
+        {
+            posteoEnCurso = true;
+            Console.WriteLine("Ejecutadno método Crear");
+            await Task.Delay(2000);
+            Console.WriteLine($"Titulo: {pelicula.Titulo}");
+            Console.WriteLine($"Fecha de lanzamiento: {pelicula.FechaLanzamiento}");
+            Console.WriteLine($"¿Hay imagen?: {pelicula.PosterArchivo is not null}");
+            Console.WriteLine($"En cartelera: {pelicula.EnCartelera}");
+            posteoEnCurso = false;
+            formularioPosteadoConExito = true;
+            StateHasChanged();
+            navigationManager.NavigateTo("/peliculas");
+        }
     }
 
 }

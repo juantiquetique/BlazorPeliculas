@@ -1,7 +1,37 @@
 ﻿@page "/actores/crear"
+@inject NavigationManager navigationManager
 
-<h3>CrearActor</h3>
+<h3>Crear Actor</h3>
+
+<FormularioActor FormularioPosteadoConExito="formularioPosteadoConExito" 
+    PosteoEnCurso="posteoEnCurso"
+    OnValidSubmit="Crear" Actor="actor"/>
 
 @code {
 
+    private bool formularioPosteadoConExito = false;
+    private bool posteoEnCurso = false;
+    private Actor actor = null!;
+
+    protected override void OnInitialized()
+    {
+        actor = new();
+    }
+
+    private async Task Crear()
+    {
+        if (!posteoEnCurso)
+        {
+            posteoEnCurso = true;
+            Console.WriteLine("Ejecutadno método Crear");
+            await Task.Delay(2000);
+            Console.WriteLine($"Nombre del Actor: {actor.Nombre}");
+            Console.WriteLine($"Fecha de nacimiento del actor: {actor.FechaNacimiento}");
+            Console.WriteLine($"¿Hay imagen?: {actor.FotoArchivo is not null}");
+            posteoEnCurso = false;
+            formularioPosteadoConExito = true;
+            StateHasChanged();
+            navigationManager.NavigateTo("/actores");
+        }
+    }
 }

@@ -1,13 +1,5 @@
-﻿//con metodo statico
-function obtenerCurrentCount() {
-    //proyecto, método a llamar
-    DotNet.invokeMethodAsync("BlazorPeliculas", "ObtenerCurrentCount")
-        .then(resultado => {
-            console.log(`Conteo desde JS: ${resultado}`);
-        })
-}
-
-//con metodo de instancia
-function invocarIncrementCount(dotnetHelper) {
-    dotnetHelper.invokeMethodAsync("IncrementCount");
+﻿window.mostrarPreview = (inputFile, tagImagen) => {
+    const url = URL.createObjectURL(inputFile.files[0]);
+    tagImagen.addEventListener('load', () => URL.revokeObjectURL(url), {once: true});
+    tagImagen.src = url;
 }
