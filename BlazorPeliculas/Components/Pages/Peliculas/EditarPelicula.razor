@@ -1,11 +1,73 @@
 ﻿@page "/peliculas/editar/{Id:int}"
-<h3>EditarPelicula</h3>
+@inject NavigationManager navigationManager
+<h3>Editar Pelicula</h3>
 
-El Id es: @Id
+@if(pelicula is null)
+{
+    <Cargando />
+}else
+{
+    <FormularioPelicula FormularioPosteadoConExito="formularioPosteadoConExito"
+                        PosteoEnCurso="posteoEnCurso" 
+                        FormularioInvalido="false" OnValidSubmit="Editar" Pelicula="pelicula" 
+                        GenerosNoSeleccionados="GenerosNoSeleccionados"
+                        GenerosSeleccionados="GenerosSeleccionados"/>
+}
 
 @code {
     [Parameter] public int Id { get; set; }
     private bool formularioPosteadoConExito = false;
     private bool posteoEnCurso = false;
     private Pelicula pelicula = null!;
+
+    private List<Genero> GenerosNoSeleccionados = new List<Genero>();
+    private List<Genero> GenerosSeleccionados = new List<Genero>();
+
+
+    protected override void OnInitialized()
+    {
+        pelicula = new()
+        {
+            Id = Id,
+            Titulo = "Peli 1",
+            FechaLanzamiento = new DateTime(2012, 05, 25),
+            EnCartelera = true,
+            Trailer = "abc",
+            PosterURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg/960px-Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg"
+        };
+
+        GenerosNoSeleccionados = new List<Genero>
+        {
+            new Genero { Id = 1, Nombre = "Comedia" },            
+            new Genero { Id = 3, Nombre = "Acción" },
+            new Genero { Id = 4, Nombre = "Sci-fi" },
+        };
+        GenerosSeleccionados = new List<Genero>
+        {
+            new Genero { Id = 2, Nombre = "Drama" }           
+        };
+    }
+
+    private async Task Editar()
+    {
+        if (!posteoEnCurso)
+        {
+            posteoEnCurso = true;
+            Console.WriteLine("Ejecutando método Editar");
+            await Task.Delay(2000);
+            Console.WriteLine($"Nombre del actor: {pelicula.Titulo}");
+            Console.WriteLine($"Fecha de nacimiento del actor: {pelicula.FechaLanzamiento}");
+            Console.WriteLine($"¿Hay Imagen?: {pelicula.PosterArchivo is not null}");
+            Console.WriteLine($"En Cartelera: {pelicula.EnCartelera}");
+
+            Console.WriteLine("Géneros:");
+            pelicula.GenerosPelicula.ForEach(x => Console.WriteLine(x.GeneroId));
+
+            posteoEnCurso = false;
+            formularioPosteadoConExito = true;
+            StateHasChanged();
+            navigationManager.NavigateTo($"/peliculas/{Id}");
+        }
+    }
+
 }
