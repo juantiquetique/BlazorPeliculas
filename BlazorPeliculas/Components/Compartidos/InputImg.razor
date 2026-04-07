@@ -38,6 +38,7 @@
         ImagenURL = null;
         mostrarPreview = true;
         StateHasChanged();
+        //esto es para mostrar la imagen seleccionada en el input file, sin necesidad de subirla al servidor
         await JS.InvokeVoidAsync("mostrarPreview", inputFile!.Element, previewImagen);
         await ImagenSeleccionada.InvokeAsync(e.File);
     }

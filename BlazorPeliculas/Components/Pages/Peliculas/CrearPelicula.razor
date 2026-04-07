@@ -42,6 +42,9 @@
 
             Console.WriteLine("Géneros:");
             pelicula.GenerosPelicula.ForEach(x => Console.WriteLine(x.GeneroId));
+            
+            Console.WriteLine("Actores:");
+            pelicula.ActoresPelicula.ForEach(x => Console.WriteLine($"{x.ActorId} - {x.Personaje}"));
 
             posteoEnCurso = false;
             formularioPosteadoConExito = true;

@@ -11,7 +11,8 @@
                         PosteoEnCurso="posteoEnCurso" 
                         FormularioInvalido="false" OnValidSubmit="Editar" Pelicula="pelicula" 
                         GenerosNoSeleccionados="GenerosNoSeleccionados"
-                        GenerosSeleccionados="GenerosSeleccionados"/>
+                        GenerosSeleccionados="GenerosSeleccionados" 
+                        ActoresSeleccionados="ActoresSeleccionados" />
 }
 
 @code {
@@ -22,6 +23,7 @@
 
     private List<Genero> GenerosNoSeleccionados = new List<Genero>();
     private List<Genero> GenerosSeleccionados = new List<Genero>();
+    private List<Actor> ActoresSeleccionados = [];
 
 
     protected override void OnInitialized()
@@ -46,6 +48,11 @@
         {
             new Genero { Id = 2, Nombre = "Drama" }           
         };
+
+        ActoresSeleccionados = new()
+        {
+            new(){Id = 1,Nombre = "Tom Holland", Personaje = "Peter Parker", FotoURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg/250px-Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg"}
+        };
     }
 
     private async Task Editar()
@@ -62,6 +69,9 @@
 
             Console.WriteLine("Géneros:");
             pelicula.GenerosPelicula.ForEach(x => Console.WriteLine(x.GeneroId));
+
+            Console.WriteLine("Actores:");
+            pelicula.ActoresPelicula.ForEach(x => Console.WriteLine($"{x.ActorId} - {x.Personaje}"));
 
             posteoEnCurso = false;
             formularioPosteadoConExito = true;

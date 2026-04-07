@@ -10,9 +10,12 @@
 
     <SelectorMultiple Label="Géneros" Seleccionados="Seleccionados" NoSeleccionados="NoSeleccionados"/>
 
+    <BPAutocompleteActor ActoresSeleccionados="ActoresSeleccionados" />
+
 </FormularioEntidad>
 
 @code {
+    [Parameter] public List<Actor> ActoresSeleccionados { get; set; } = [];
     [Parameter] public List<Genero> GenerosSeleccionados { get; set; } = [];
     [Parameter, EditorRequired] public List<Genero> GenerosNoSeleccionados { get; set; } = [];
     [Parameter, EditorRequired] public Pelicula Pelicula { get; set; } = null!;
@@ -33,6 +36,14 @@
     {
         Pelicula.GenerosPelicula = Seleccionados
             .Select(x => new GeneroPelicula { GeneroId = int.Parse(x.Identificador) }).ToList();
+
+        Pelicula.ActoresPelicula = ActoresSeleccionados
+        .Select((actor, indice) => new ActorPelicula
+        {
+            ActorId = actor.Id,
+            Personaje = actor.Personaje,
+            Orden = indice
+        }).ToList();
 
         await OnValidSubmit.InvokeAsync();
     }

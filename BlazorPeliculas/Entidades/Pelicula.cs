@@ -14,4 +14,5 @@ public class Pelicula
     public string? PosterURL { get; set; }
     public IBrowserFile? PosterArchivo { get; set; }
     public List<GeneroPelicula> GenerosPelicula { get; set; } = [];
+    public List<ActorPelicula> ActoresPelicula { get; set; } = [];
 }
