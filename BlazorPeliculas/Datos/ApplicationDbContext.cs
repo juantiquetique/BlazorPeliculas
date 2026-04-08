@@ -1,0 +1,31 @@
+﻿using BlazorPeliculas.Entidades;
+using Microsoft.EntityFrameworkCore;
+
+namespace BlazorPeliculas.Datos;
+
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions options) : base(options)
+    {
+    }
+
+    protected ApplicationDbContext()
+    {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<GeneroPelicula>().HasKey(x => new { x.GeneroId, x.PeliculaId });
+        modelBuilder.Entity<ActorPelicula>().HasKey(x => new { x.ActorId, x.PeliculaId });
+    }
+
+    //me permite indicar que clase realmete es una entidad, es decir, que se va a mapear a una tabla de la base de datos
+    public DbSet<Genero> Generos { get; set; }
+    public DbSet<Actor> Actor { get; set; }
+    public DbSet<Pelicula> Peliculas{ get; set; }
+    public DbSet<GeneroPelicula> GenerosPeliculas{ get; set; }
+    public DbSet<ActorPelicula> ActoresPeliculas{ get; set; }
+
+}

@@ -1,6 +1,8 @@
 using BlazorPeliculas;
 using BlazorPeliculas.Components;
+using BlazorPeliculas.Datos;
 using BlazorPeliculas.Servicios;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+//AddDbContextFactory: es la manera recomendad de usar entity framework core en un modelo como blazor server o que use interactividad con el servidor
+builder.Services.AddDbContextFactory<ApplicationDbContext>(opciones => opciones.UseSqlServer("name=DefaultConnection"));
 
 builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculasEnMemoria>();
 

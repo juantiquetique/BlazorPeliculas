@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlazorPeliculas.Entidades;
 
@@ -10,7 +11,11 @@ public class Actor
     public string? Nombre { get; set; }
     public string? FotoURL { get; set; }
     public DateTime? FechaNacimiento { get; set; }
+    public List<ActorPelicula> ActoresPeliculas { get; set; } = [];
+
+    [NotMapped]
     public IBrowserFile? FotoArchivo { get; set; }
+    [NotMapped]
     public string? Personaje { get; set; }
 
     public override bool Equals(object? obj)
