@@ -3,22 +3,30 @@
 @if (Listado is null)
 {
     @Cargando
-} else if (Listado.Count == 0)
+} else if (Listado.Count() == 0)
 {
     @NoHayRegistros
 }
 else
 {
-    foreach(var elemento in Listado)
+    if(ChildContent is not null)
     {
-        @ChildContent(elemento)
+        foreach(var elemento in Listado)
+        {
+            @ChildContent(elemento)
+        }
+    }
+    else
+    {
+        @HayRegistrosCompleto
     }
 }
 
 
 @code {
-    [Parameter, EditorRequired] public List<T>? Listado { get; set; }
+    [Parameter, EditorRequired] public IEnumerable<T> Listado { get; set; }
     [Parameter] public RenderFragment? Cargando { get; set; } =@<Cargando/>;
     [Parameter] public RenderFragment? NoHayRegistros { get; set; } =@<text>No existen Películas para mostrar...</text>;
-    [Parameter, EditorRequired] public RenderFragment<T> ChildContent { get; set; } = null!;
+    [Parameter] public RenderFragment<T>? ChildContent { get; set; } = null!; //?: significa que el valor puede ser nulo (opcional).
+    [Parameter] public RenderFragment? HayRegistrosCompleto { get; set; }
 }

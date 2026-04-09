@@ -1,4 +1,5 @@
 ﻿@page "/generos"
+@inject IServicioGeneros servicioGeneros
 
 <h3>Indice Generos</h3>
 
@@ -8,6 +9,45 @@
     </BPLink>
 </div>
 
-@code {
+<ListadoGenerico Listado="generos">
+    <HayRegistrosCompleto>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var genero in generos!)
+                {
+                    <tr @key="@genero.Id">
+                        <td>
+                            <BPLink Href="">Editar</BPLink>
+                            <BPBoton Variante="Variante.Error">Borrar</BPBoton>
+                        </td>
+                        <td>
+                            @genero.Nombre
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </HayRegistrosCompleto>
+</ListadoGenerico>
 
+@code {
+    private IEnumerable<Genero>? generos = null;
+
+    protected override async Task OnAfterRenderAsync(bool firtsRender)
+    {
+        if (!firtsRender)
+        {
+            return;
+        }
+
+        await Task.Yield(); // Permite que el UI se actualice antes de realizar la operación de base de datos
+        generos = await servicioGeneros.Obtener();
+        StateHasChanged();
+    }
 }

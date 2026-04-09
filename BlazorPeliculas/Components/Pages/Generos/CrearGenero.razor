@@ -1,6 +1,11 @@
 ﻿@page "/generos/crear"
+@using BlazorPeliculas.Datos
 @using BlazorPeliculas.Utilidades
+@using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
+@* @inject IDbContextFactory<ApplicationDbContext> DbFactory// El DbContextFactory se inyecta para crear instancias de ApplicationDbContext de manera eficiente y controlada. *@
+@inject IServicioGeneros servicioGeneros
+
 @inject NavigationManager navigationManager
 
 <h3>CrearGenero</h3>
@@ -25,13 +30,25 @@
         if (!posteoEnCurso)
         {            
             posteoEnCurso = true;
-            Console.WriteLine("Ejecutadno método Crear");
-            await Task.Delay(2000);
-            Console.WriteLine($"Nombre del género: {genero.Nombre}");
+            //esto es para mantener una experencia de usuario fluida, para que el formulario se deshabilite 
+            // y muestre un mensaje de "cargando" mientras se realiza la operación de base de datos
+            StateHasChanged();
+            await Task.Yield(); // Permite que el UI se actualice antes de realizar la operación de base de datos
+            //***************************************/
+
+            //esto es para usar Entity Frmework Core en un componente de blazor
+            // se instancia el dbcontex por un momento y luego se termina utilizando el factory, se agrega el nuevo género y se guardan los cambios
+            // using var context = DbFactory.CreateDbContext();
+            // context.Add(genero);
+            // await context.SaveChangesAsync();
+
+            await servicioGeneros.Crear(genero);
+
             posteoEnCurso = false;
             formularioPosteadoConExito = true;
             StateHasChanged();
             navigationManager.NavigateTo("/generos");
+            //************************************************/
         }
     }
 }

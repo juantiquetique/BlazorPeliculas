@@ -15,6 +15,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opciones => opciones.UseSqlServer("name=DefaultConnection"));
 
 builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculasEnMemoria>();
+builder.Services.AddScoped<IServicioGeneros, ServicioGeneros>();
 
 builder.Services.AddMudServices();
 
