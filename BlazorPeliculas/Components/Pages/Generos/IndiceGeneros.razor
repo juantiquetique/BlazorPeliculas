@@ -1,4 +1,5 @@
 ﻿@page "/generos"
+@using BlazorPeliculas.DTOs
 @inject IServicioGeneros servicioGeneros
 
 <h3>Indice Generos</h3>
@@ -11,6 +12,12 @@
 
 <ListadoGenerico Listado="generos">
     <HayRegistrosCompleto>
+
+        <Paginacion PaginaActual="paginaActual"
+            CantidadTotalRegistros="cantidadTotalRegistros"
+            RegistroPorPagina="registrosPorPagina"
+                    PaginaSeleccionada="PaginaSeleccionada"  />
+
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -38,6 +45,9 @@
 
 @code {
     private IEnumerable<Genero>? generos = null;
+    private int paginaActual = 1;
+    private int registrosPorPagina = 5;
+    private int cantidadTotalRegistros;
 
     protected override async Task OnAfterRenderAsync(bool firtsRender)
     {
@@ -46,8 +56,22 @@
             return;
         }
 
-        await Task.Yield(); // Permite que el UI se actualice antes de realizar la operación de base de datos
-        generos = await servicioGeneros.Obtener();
+        await Task.Yield(); // Permite que el UI se actualice antes de realizar la operación de base de datos        
+        await Cargar();
         StateHasChanged();
+    }
+
+    private async Task Cargar(int pagina = 1)
+    {
+        var paginacionDTO = new PaginacionDTO(pagina, registrosPorPagina);
+        var resultadoPaginado = await servicioGeneros.Obtener(paginacionDTO);
+        generos = resultadoPaginado.Elemento;
+        cantidadTotalRegistros = resultadoPaginado.CantidadTotalRegistros;        
+    }
+
+    private async Task PaginaSeleccionada(int pagina)
+    {
+        paginaActual = pagina;
+        await Cargar(pagina);
     }
 }

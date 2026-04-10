@@ -1,6 +1,8 @@
 ﻿
 using BlazorPeliculas.Datos;
+using BlazorPeliculas.DTOs;
 using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Utilidades;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorPeliculas.Servicios;
@@ -17,9 +19,19 @@ public class ServicioGeneros(IDbContextFactory<ApplicationDbContext> dbFactory) 
         return genero.Id;
     }
 
-    public async Task<IEnumerable<Genero>> Obtener()
+    public async Task<ResultadoPaginadoDTO<Genero>> Obtener(PaginacionDTO paginacionDTO)
     {
         using var context= dbFactory.CreateDbContext();
-        return await context.Generos.OrderBy(g=>g.Nombre).AsNoTracking().ToListAsync();
+        var elementos = await context.Generos.OrderBy(g => g.Nombre)
+            .Paginar(paginacionDTO)
+            .AsNoTracking().ToListAsync();// se obtiene la lista de géneros ordenados por nombre, se aplica la paginación utilizando el método de extensión "Paginar" y se convierte a una lista de forma asíncrona. El método "AsNoTracking" se utiliza para mejorar el rendimiento al indicar que no se realizarán cambios en los objetos recuperados.
+        var conteo = await context.Generos.CountAsync();// se obtiene el conteo total de registros para poder mostrarlo en la interfaz de usuario y así saber cuántas páginas hay en total
+        var respuesta = new ResultadoPaginadoDTO<Genero>
+        {
+            CantidadTotalRegistros = conteo,
+            Elemento = elementos
+        };
+
+        return respuesta;
     }
 }
