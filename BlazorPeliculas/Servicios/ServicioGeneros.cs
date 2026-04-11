@@ -9,6 +9,27 @@ namespace BlazorPeliculas.Servicios;
 
 public class ServicioGeneros(IDbContextFactory<ApplicationDbContext> dbFactory) : IServicioGeneros
 {
+    public async Task Actualizar(Genero genero)
+    {
+        using var context = dbFactory.CreateDbContext();
+        context.Update(genero);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<bool> Borrar(int id)
+    {
+        using var context = dbFactory.CreateDbContext();
+        // en la tabla de generos busca aquellos generos cuyo Id sea igual al id que se le paso por parámetro
+        // y luego ejecuta la eliminación de forma asíncrona utilizando el método "ExecuteDeleteAsync".
+        // El resultado de esta operación se almacena en la variable "elementosBorrados",
+        // que indica la cantidad de registros eliminados. Si el valor de "elementosBorrados" es mayor a cero,
+        // significa que se eliminó al menos un registro, por lo que se devuelve "true". En caso contrario,
+        // si no se eliminó ningún registro, se devuelve "false".
+        var elementosBorrados = await context.Generos.Where(g => g.Id == id).ExecuteDeleteAsync();
+        return elementosBorrados == 1;
+
+    }
+
     //como nos vamos a comunicar con la base de datos la buena práctica es utilizar programación asíncrona
     public async Task<int> Crear(Genero genero)
     {
@@ -33,5 +54,11 @@ public class ServicioGeneros(IDbContextFactory<ApplicationDbContext> dbFactory) 
         };
 
         return respuesta;
+    }
+
+    public async Task<Genero?> ObtenerPorId(int id)
+    {
+        using var context = dbFactory.CreateDbContext();
+        return await context.Generos.FirstOrDefaultAsync(g => g.Id == id);
     }
 }

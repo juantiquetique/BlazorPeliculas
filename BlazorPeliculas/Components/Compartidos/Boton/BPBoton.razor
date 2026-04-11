@@ -1,5 +1,7 @@
-﻿<button @attributes="AtributosAdicionales"  type="@Tipo.ToString()" disabled="@Disabled" 
-class="@ClaseCSS" @onclick="OnClick"
+﻿@inject IJSRuntime JS
+
+<button @attributes="AtributosAdicionales"  type="@Tipo.ToString()" disabled="@Disabled" 
+class="@ClaseCSS" @onclick="OnClickInterno"
 >@ChildContent</button>
 
 @code {
@@ -26,6 +28,23 @@ class="@ClaseCSS" @onclick="OnClick"
     // usar el componente en Home.razor, y si no se le pasa ningún contenido hijo, 
     // entonces se mostrará el texto por defecto "Enviar"
     [Parameter] public RenderFragment? ChildContent { get; set; } = @<text>Enviar</text>;
+
+    [Parameter] public string? MensajeConfirmacion { get; set; }
+
+    private async Task OnClickInterno()
+    {
+        if (!string.IsNullOrEmpty(MensajeConfirmacion))
+        {
+            var confirmado = await JS.Confirm(MensajeConfirmacion);
+
+            if (!confirmado)
+            {
+                return;
+            }
+        }
+        
+        await OnClick.InvokeAsync();
+    }
 
     private string ClaseCSS
     {

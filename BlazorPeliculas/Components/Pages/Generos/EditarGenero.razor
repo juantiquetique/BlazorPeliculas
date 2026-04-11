@@ -1,5 +1,5 @@
 ﻿@page "/generos/editar/{Id:int}"
-
+@inject IServicioGeneros servicioGeneros
 @inject NavigationManager navigationManager
 
 <h3>Editar Género</h3>
@@ -21,13 +21,25 @@ else
 
 @code {
     [Parameter] public int Id { get; set; }
-    private Genero genero = null!;
+    private Genero? genero = null;
     private bool formularioPosteadoConExito = false;
     private bool posteoEnCurso = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        genero = new() { Id = Id, Nombre = "Acción" };
+        if(!firstRender)
+        {
+            return;
+        }
+
+        genero = await servicioGeneros.ObtenerPorId(Id);
+
+        if(genero is null)
+        {
+            navigationManager.NavigateTo("/generos");
+        }
+
+        StateHasChanged();// Permite que el UI se actualice después de obtener el género de la base de datos
     }
 
     private async Task Editar()
@@ -35,9 +47,12 @@ else
         if (!posteoEnCurso)
         {
             posteoEnCurso = true;
-            Console.WriteLine("Ejecutando método Editar");
-            await Task.Delay(2000);
-            Console.WriteLine($"Nombre del género: {genero.Nombre}");
+            
+            StateHasChanged();
+            await Task.Yield(); // Permite que el UI se actualice antes de realizar la operación de base de datos
+
+            await servicioGeneros.Actualizar(genero!);
+
             posteoEnCurso = false;
             formularioPosteadoConExito = true;
             StateHasChanged();
