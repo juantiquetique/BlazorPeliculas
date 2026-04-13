@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using BlazorPeliculas.DTOs;
+using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,6 +20,8 @@ public class Actor
     public IBrowserFile? FotoArchivo { get; set; }
     [NotMapped]
     public string? Personaje { get; set; }
+    [NotMapped]
+    public ArchivoDTO? Archivo { get; set; }
 
     // se sobreescribe el método equals para comparar dos actores por su id,
     // esto es útil para evitar problemas de referencia al comparar objetos en la lógica de la aplicación,

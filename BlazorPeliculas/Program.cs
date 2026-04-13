@@ -16,6 +16,11 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(opciones => opciones.
 
 builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculasEnMemoria>();
 builder.Services.AddScoped<IServicioGeneros, ServicioGeneros>();
+builder.Services.AddScoped<IServicioActores, ServicioActores>();
+
+builder.Services.AddScoped<IAlmacenadorArchivos, AlmacenadorArchivosLocal>();//se agrega el servicio de almacenamiento de archivos local
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMudServices();
 
@@ -34,6 +39,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+app.UseStaticFiles();//se agrega para que el servidor pueda servir los archivos estáticos como css, js, imágenes, etc localmente
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

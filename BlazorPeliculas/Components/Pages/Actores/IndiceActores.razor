@@ -1,5 +1,7 @@
 ﻿@page "/actores"
 
+@inject IServicioActores servicioActores
+
 <h3>Indice Actores</h3>
 
 <div>
@@ -8,6 +10,74 @@
     </BPLink>
 </div>
 
-@code {
+<ListadoGenerico Listado="@actores">
+    <HayRegistrosCompleto>
+        <Paginacion PaginaActual="paginaActual"
+            CantidadTotalRegistros="cantidadTotalRegistros"
+        RegistroPorPagina="registrosPorPagina"
+        PaginaSeleccionada="PaginaSeleccionada"></Paginacion>
 
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var actor in actores!)
+                {
+                    <tr @key="actor.Id">
+                        <td>
+                            <BPLink Href="@($"/actores/editar/{actor.Id}")">Editar</BPLink>
+                            <BPBoton OnClick="@(() => BorrarGenero(actor.Id))"
+                                     Variante="Variante.Error"
+                                     MensajeConfirmacion="@($"¿Desea borrar el actor {actor.Nombre}?")">Borrar</BPBoton>
+                        </td>
+                        <td>@actor.Nombre</td>                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </HayRegistrosCompleto>
+</ListadoGenerico>
+
+@code {
+    private IEnumerable<Actor>? actores = null;
+    private int paginaActual = 1;
+    private int registrosPorPagina = 10;
+    private int cantidadTotalRegistros;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender)
+        {
+            return;
+        }
+
+        await Task.Yield();
+        await Cargar();
+        StateHasChanged();
+    }
+
+    private async Task Cargar(int pagina = 1)
+    {
+        var paginacionDTO = new PaginacionDTO(pagina, registrosPorPagina);
+        var resultadoPaginado = await servicioActores.Obtener(paginacionDTO);
+        actores = resultadoPaginado.Elemento;
+        cantidadTotalRegistros = resultadoPaginado.CantidadTotalRegistros;
+    }
+
+    private async Task PaginaSeleccionada(int pagina)
+    {
+        paginaActual = pagina;
+        await Cargar(pagina);
+    }
+
+    private async Task BorrarGenero(int id)
+    {
+        await servicioActores.Borrar(id);
+        await Cargar();
+    }
 }
