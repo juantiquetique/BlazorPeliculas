@@ -1,5 +1,6 @@
 ﻿@page "/actores/editar/{Id:int}"
 @inject NavigationManager navigationManager
+@inject IServicioActores servicioActores
 
 <h3>Editar Actor</h3>
 
@@ -22,14 +23,23 @@ else
     [Parameter] public int Id { get; set; }
     private bool formularioPosteadoConExito = false;
     private bool posteoEnCurso = false;
-    private Actor actor = null!;
+    private Actor? actor = null;
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        actor = new() { Id = Id, Nombre = "Felipe",
-            FechaNacimiento = new DateTime(1901, 05, 25),
-            FotoURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg/960px-Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg"
-        };
+        if(!firstRender)
+        {
+            return;
+        }
+
+        actor = await servicioActores.ObtenerPorId(Id);
+
+        if(actor is null)
+        {
+            navigationManager.NavigateTo("/actores");
+        }
+
+        StateHasChanged();
     }
 
     private async Task Editar()
@@ -37,11 +47,19 @@ else
         if (!posteoEnCurso)
         {
             posteoEnCurso = true;
-            Console.WriteLine("Ejecutando método Editar");
-            await Task.Delay(2000);
-            Console.WriteLine($"Nombre del actor: {actor.Nombre}");
-            Console.WriteLine($"Fecha de nacimiento del actor: {actor.FechaNacimiento}");
-            Console.WriteLine($"¿Hay Imagen?: {actor.FotoArchivo is not null}");
+
+            StateHasChanged();
+            await Task.Yield();
+
+            var browserFile = actor!.FotoArchivo;
+
+            if(browserFile is not null)
+            {
+                actor.Archivo = browserFile.ConvertirAArchivoDTO();
+            }
+
+            await servicioActores.Actualizar(actor!);
+
             posteoEnCurso = false;
             formularioPosteadoConExito = true;
             StateHasChanged();

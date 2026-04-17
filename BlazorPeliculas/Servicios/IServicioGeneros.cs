@@ -19,4 +19,6 @@ public interface IServicioGeneros
     Task<Genero?> ObtenerPorId(int id);
 
     Task<bool> Borrar(int id);
+
+    Task<IEnumerable<Genero>> ObtenerTodos();
 }

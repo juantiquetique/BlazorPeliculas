@@ -1,0 +1,16 @@
+﻿<a href="@ObtnerUrl">
+    <img src="@Pelicula.PosterURL" class="img-fluid mb-2 w-100" style="height: 300px" />
+</a>
+<div class="card-body p-2">
+    <div class="fw-semibold">
+        <a href="@ObtnerUrl">
+            @Pelicula.Titulo
+        </a>
+    </div>
+</div>
+
+@code {
+    // Parametros requeridos
+    [Parameter, EditorRequired] public required Pelicula Pelicula { get; set; }
+    private string ObtnerUrl => $"/peliculas/{Pelicula.Id}/{Pelicula.TituloFormateadoParaURl}";
+}

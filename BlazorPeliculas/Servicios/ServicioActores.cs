@@ -12,6 +12,19 @@ namespace BlazorPeliculas.Servicios
     {
         private readonly string contenedor = "actores";
 
+        public async Task Actualizar(Actor actor)
+        {
+            if(actor.Archivo is not null)
+            {
+                actor.FotoURL = await almacenadorArchivos.Editar(actor.FotoURL,
+                    contenedor, actor.Archivo);
+            }
+
+            using var context = dbFactory.CreateDbContext();
+            context.Update(actor);
+            await context.SaveChangesAsync();
+        }
+
         public async Task<bool> Borrar(int id)
         {
             using var context = dbFactory.CreateDbContext();
@@ -58,6 +71,18 @@ namespace BlazorPeliculas.Servicios
             };
 
             return respuesta;
+        }
+
+        public async Task<Actor?> ObtenerPorId(int id)
+        {
+            using var context = dbFactory.CreateDbContext();
+            return await context.Actor.FirstOrDefaultAsync(x=> x.Id == id);
+        }
+
+        public async Task<IEnumerable<Actor>> ObtenerPorNombre(string nombre)
+        {
+            using var context = dbFactory.CreateDbContext();
+            return await context.Actor.Where(x => x.Nombre!.Contains(nombre)).ToListAsync();
         }
     }
 }

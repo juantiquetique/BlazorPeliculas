@@ -61,4 +61,10 @@ public class ServicioGeneros(IDbContextFactory<ApplicationDbContext> dbFactory) 
         using var context = dbFactory.CreateDbContext();
         return await context.Generos.FirstOrDefaultAsync(g => g.Id == id);
     }
+
+    public async Task<IEnumerable<Genero>> ObtenerTodos()
+    {
+        using var context = dbFactory.CreateDbContext();
+        return await context.Generos.OrderBy(x => x.Nombre).ToListAsync();
+    }
 }

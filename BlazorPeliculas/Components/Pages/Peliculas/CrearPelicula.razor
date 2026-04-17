@@ -1,31 +1,44 @@
 ﻿@page "/peliculas/crear"
 @inject NavigationManager navigationManager
+@inject IServicioGeneros servicioGeneros
+@inject IServicioPeliculas servicioPeliculas
 @rendermode InteractiveServer
 
 <h3>CrearPelicula</h3>
 
-<FormularioPelicula FormularioPosteadoConExito="formularioPosteadoConExito"
-    PosteoEnCurso="posteoEnCurso"
-    OnValidSubmit="Crear" Pelicula="pelicula"
-    GenerosNoSeleccionados="GenerosNoSeleccionados"/>
+@if(GenerosNoSeleccionados is null)
+{
+    <Cargando />
+}else
+{
+    <FormularioPelicula FormularioPosteadoConExito="formularioPosteadoConExito"
+        PosteoEnCurso="posteoEnCurso"
+        OnValidSubmit="Crear" Pelicula="pelicula"
+        GenerosNoSeleccionados="GenerosNoSeleccionados"/>
+}
+
 
 @code {
     private bool formularioPosteadoConExito = false;
     private bool posteoEnCurso = false;
     private Pelicula pelicula = null!;
-    private List<Genero> GenerosNoSeleccionados = new List<Genero>();
+    private List<Genero>? GenerosNoSeleccionados = null;
 
     protected override void OnInitialized()
     {
-        pelicula = new();
+        pelicula = new();        
+    }
 
-        GenerosNoSeleccionados = new List<Genero>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender)
         {
-            new Genero { Id = 1, Nombre = "Comedia" },
-            new Genero { Id = 2, Nombre = "Drama" },
-            new Genero { Id = 3, Nombre = "Acción" },
-            new Genero { Id = 4, Nombre = "Sci-fi" },            
-        };
+            return;
+        }
+
+        var generos = await servicioGeneros.ObtenerTodos();
+        GenerosNoSeleccionados = generos.ToList();
+        StateHasChanged();
     }
 
     private async Task Crear()
@@ -33,18 +46,25 @@
         if (!posteoEnCurso)
         {
             posteoEnCurso = true;
-            Console.WriteLine("Ejecutadno método Crear");
-            await Task.Delay(2000);
-            Console.WriteLine($"Titulo: {pelicula.Titulo}");
-            Console.WriteLine($"Fecha de lanzamiento: {pelicula.FechaLanzamiento}");
-            Console.WriteLine($"¿Hay imagen?: {pelicula.PosterArchivo is not null}");
-            Console.WriteLine($"En cartelera: {pelicula.EnCartelera}");
 
-            Console.WriteLine("Géneros:");
-            pelicula.GenerosPelicula.ForEach(x => Console.WriteLine(x.GeneroId));
-            
-            Console.WriteLine("Actores:");
-            pelicula.ActoresPelicula.ForEach(x => Console.WriteLine($"{x.ActorId} - {x.Personaje}"));
+            StateHasChanged();
+            await Task.Yield();
+
+            var browserFile = pelicula.PosterArchivo;
+
+            if (browserFile is not null)
+            {
+                pelicula.Archivo = browserFile.ConvertirAArchivoDTO();
+            }
+            try
+            {
+                await servicioPeliculas.Crear(pelicula);
+            }
+
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             posteoEnCurso = false;
             formularioPosteadoConExito = true;

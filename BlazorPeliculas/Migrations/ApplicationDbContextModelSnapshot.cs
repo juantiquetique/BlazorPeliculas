@@ -88,15 +88,12 @@ namespace BlazorPeliculas.Migrations
                     b.Property<int>("GeneroId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PeliculaId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("PeliculaId1")
+                    b.Property<int>("PeliculaId")
                         .HasColumnType("int");
 
                     b.HasKey("GeneroId", "PeliculaId");
 
-                    b.HasIndex("PeliculaId1");
+                    b.HasIndex("PeliculaId");
 
                     b.ToTable("GenerosPeliculas");
                 });
@@ -159,7 +156,9 @@ namespace BlazorPeliculas.Migrations
 
                     b.HasOne("BlazorPeliculas.Entidades.Pelicula", "Pelicula")
                         .WithMany("GenerosPelicula")
-                        .HasForeignKey("PeliculaId1");
+                        .HasForeignKey("PeliculaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Genero");
 

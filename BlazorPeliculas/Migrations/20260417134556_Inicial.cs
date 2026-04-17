@@ -86,9 +86,8 @@ namespace BlazorPeliculas.Migrations
                 name: "GenerosPeliculas",
                 columns: table => new
                 {
-                    PeliculaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    GeneroId = table.Column<int>(type: "int", nullable: false),
-                    PeliculaId1 = table.Column<int>(type: "int", nullable: true)
+                    PeliculaId = table.Column<int>(type: "int", nullable: false),
+                    GeneroId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -100,10 +99,11 @@ namespace BlazorPeliculas.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GenerosPeliculas_Peliculas_PeliculaId1",
-                        column: x => x.PeliculaId1,
+                        name: "FK_GenerosPeliculas_Peliculas_PeliculaId",
+                        column: x => x.PeliculaId,
                         principalTable: "Peliculas",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -112,9 +112,9 @@ namespace BlazorPeliculas.Migrations
                 column: "PeliculaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GenerosPeliculas_PeliculaId1",
+                name: "IX_GenerosPeliculas_PeliculaId",
                 table: "GenerosPeliculas",
-                column: "PeliculaId1");
+                column: "PeliculaId");
         }
 
         /// <inheritdoc />

@@ -6,19 +6,25 @@
 
 @* con el @ref se hace referencia a un componente para poder manipularlo facilmente *@
 <h3>En Cartelera</h3>
-<ListadoPeliculas Peliculas="enCartelera"/>
+<ListadoPeliculas Peliculas="_homeDTO.EnCartelera"/>
 
 <h3>Futuros Estrenos</h3>
-<ListadoPeliculas Peliculas="futurosEstrenos"/>    
+<ListadoPeliculas Peliculas="_homeDTO.FuturosEstrenos"/>    
 
 
 @code {
-    protected override void OnInitialized()
-    {
-        enCartelera = servicioPeliculas.ObternerPeliculas();
-        futurosEstrenos = servicioPeliculas.ObternerPeliculas();
-    }
+    private HomeDTO _homeDTO = new();
 
-    private List<Pelicula>? enCartelera = null;
-    private List<Pelicula>? futurosEstrenos = null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender)
+        {
+            return;
+        }
+
+        await Task.Yield();
+
+        _homeDTO = await servicioPeliculas.ObtenerPeliculasHome();
+        StateHasChanged();
+    }
 }

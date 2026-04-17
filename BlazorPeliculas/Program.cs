@@ -14,7 +14,7 @@ builder.Services.AddRazorComponents()
 //AddDbContextFactory: es la manera recomendad de usar entity framework core en un modelo como blazor server o que use interactividad con el servidor
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opciones => opciones.UseSqlServer("name=DefaultConnection"));
 
-builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculasEnMemoria>();
+builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculas>();
 builder.Services.AddScoped<IServicioGeneros, ServicioGeneros>();
 builder.Services.AddScoped<IServicioActores, ServicioActores>();
 

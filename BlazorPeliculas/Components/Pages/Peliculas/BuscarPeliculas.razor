@@ -53,7 +53,7 @@
             new(){ Id = 2, Nombre = "Drama"}
         };
 
-        Peliculas = servicioPeliculas.ObternerPeliculas();
+        // Peliculas = servicioPeliculas.ObternerPeliculas();
     }
 
 
@@ -68,8 +68,8 @@
     private void CargarNuevasPeliculas()
     {
         // Simulación de carga de películas según los filtros seleccionados
-        Peliculas = servicioPeliculas.ObternerPeliculas()
-        .Where(x => x.Titulo.ToLower().Contains(titulo.ToLower())).ToList();    
+        // Peliculas = servicioPeliculas.ObternerPeliculas()
+        // .Where(x => x.Titulo.ToLower().Contains(titulo.ToLower())).ToList();    
 
         Console.WriteLine($"titulo:{titulo}");
         Console.WriteLine($"generoId:{generoId}");
@@ -79,7 +79,7 @@
     }
     private void Limpiar()
     {
-        Peliculas = servicioPeliculas.ObternerPeliculas();
+        // Peliculas = servicioPeliculas.ObternerPeliculas();
         titulo = "";
         generoId = 0;
         futurosEstrenos = false;

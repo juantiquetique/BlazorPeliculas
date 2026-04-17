@@ -1,4 +1,6 @@
-﻿<div class="mb-3">
+﻿@inject IServicioActores servicioActores
+
+<div class="mb-3">
     <label>Actores:</label>
     <div>
         <MudAutocomplete T="Actor" Placeholder="Seleccione un actor..." SearchFunc="Search" ToStringFunc="@(e=>null)"
@@ -43,14 +45,8 @@
             return new List<Actor>();
         }
 
-        var lista = new List<Actor>
-        {
-            new Actor { Id = 1, Nombre = "Tom Holland", FotoURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg/250px-Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg" },
-            new Actor { Id = 2, Nombre = "Tom Hanks", FotoURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/TomHanksPrincEdw031223_%2811_of_41%29_%28cropped%29.jpg/250px-TomHanksPrincEdw031223_%2811_of_41%29_%28cropped%29.jpg" },
-            new Actor { Id = 3, Nombre = "Samuel L. Jackson", FotoURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/SamuelLJackson.jpg/250px-SamuelLJackson.jpg" }
-        };
-
-        return lista.Where(x => x.Nombre!.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        var actores = await servicioActores.ObtenerPorNombre(value);
+        return actores;
     }
 
     async Task ValueChanged(Actor actor)
