@@ -22,6 +22,42 @@ namespace BlazorPeliculas.Servicios
             return pelicula.Id;
         }
 
+        public async Task<PeliculaDetalleDTO?> ObtenerDetalle(int id)
+        {
+            using var context = dbFactory.CreateDbContext();
+            var pelicula = await context.Peliculas.Where(p => p.Id == id)
+                .Include(p => p.GenerosPelicula)
+                    .ThenInclude(gp => gp.Genero)
+                .Include(p => p.ActoresPelicula.OrderBy(pa => pa.Orden))
+                    .ThenInclude(pa => pa.Actor)
+                .FirstOrDefaultAsync();
+
+            if (pelicula is null)
+            {
+                return null;
+            }
+
+            //TODO: Sistema de Votacion
+            var promedioVoto = 4;
+            var votoUsuario = 5;
+
+            var modelo = new PeliculaDetalleDTO();
+            modelo.Pelicula = pelicula;
+            modelo.Generos = pelicula.GenerosPelicula.Select(gp => gp.Genero!).ToList();
+            modelo.Actores = pelicula.ActoresPelicula.Select(pa => new Actor
+            {
+                Id = pa.ActorId,
+                Nombre = pa.Actor!.Nombre,
+                Personaje = pa.Personaje,
+                FotoURL = pa.Actor.FotoURL
+            }).ToList();
+
+            modelo.PromedioVotos = promedioVoto;
+            modelo.VotoUsuario = votoUsuario;
+
+            return modelo;
+        }
+
         public async Task<HomeDTO> ObtenerPeliculasHome()
         {
             var limite = 5;
