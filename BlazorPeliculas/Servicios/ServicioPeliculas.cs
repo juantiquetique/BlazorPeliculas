@@ -1,6 +1,7 @@
 ﻿using BlazorPeliculas.Datos;
 using BlazorPeliculas.DTOs;
 using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Utilidades;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorPeliculas.Servicios
@@ -9,6 +10,50 @@ namespace BlazorPeliculas.Servicios
         IAlmacenadorArchivos almacenadorArchivos) : IServicioPeliculas
     {
         private readonly string contenedor = "peliculas";
+
+        public async Task<ResultadoPaginadoDTO<Pelicula>> Buscar(ParametrosBusquedaPeliculaDTO parametros)
+        {
+            using var context = dbFactory.CreateDbContext();
+            var peliculasQueryable = context.Peliculas.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(parametros.Titulo))
+            {
+                peliculasQueryable = peliculasQueryable
+                                    .Where(x => x.Titulo!.Contains(parametros.Titulo));
+            }
+
+            if(parametros.EnCartelera)
+            {
+                peliculasQueryable = peliculasQueryable.Where(x => x.EnCartelera);
+            }
+
+            if(parametros.Estrenos)
+            {
+                var hoy = DateTime.Today;
+                peliculasQueryable = peliculasQueryable.Where(x => x.FechaLanzamiento >= hoy);
+            }
+
+            if(parametros.GeneroId != 0)
+            {
+                peliculasQueryable = peliculasQueryable
+                    .Where(p =>
+                    p.GenerosPelicula.Select(gp => gp.GeneroId).Contains(parametros.GeneroId));
+            }
+
+            //TODO: implementar votación
+
+            var peliculas = await peliculasQueryable.Paginar(parametros.PaginacionDTO).ToListAsync();
+            var conteo = await peliculasQueryable.CountAsync();
+
+            var respuesta = new ResultadoPaginadoDTO<Pelicula>
+            {
+                Elemento = peliculas,
+                CantidadTotalRegistros = conteo
+            };
+
+            return respuesta;
+        }
+
         public async Task<int> Crear(Pelicula pelicula)
         {
             if (pelicula.Archivo is not null)

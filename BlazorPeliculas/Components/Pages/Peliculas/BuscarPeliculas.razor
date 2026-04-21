@@ -1,39 +1,52 @@
 ﻿@page "/peliculas/buscar"
 @inject IServicioPeliculas servicioPeliculas
+@inject IServicioGeneros servicioGeneros
 <h3>Buscar Películas</h3>
 
-<div class="row top-row g-3 align-items-center mb-3">
-    <div class="col-sm-3">
-        <input type="text" class="form-control" id="titulo" placeholder="Título Película"
-                @bind="titulo" @bind:event="oninput"
-                @onkeypress="@((KeyboardEventArgs e)=> TituloKeyPress(e))"
-                autocomplete="off"/>
-    </div>
-    <div class="col-sm-3">
-        <select class="form-select" @bind="generoId">
-            <option value="0">-- Seleccione un género --</option>
-            @foreach (var item in generos)
-            {
-                <option value="@item.Id">@item.Nombre</option>
-            }
-        </select>
-    </div>
-    <div class="col-sm-6 d-flex">
-        <div class="me-2">
-            <BPCheckbox Label="Futuros Estrenos" @bind-Value="futurosEstrenos"/>
+@if(generos is null)
+{
+    <Cargando />
+} else
+{
+    <div class="row top-row g-3 align-items-center mb-3">
+        <div class="col-sm-3">
+            <input type="text" class="form-control" id="titulo" placeholder="Título Película"
+                    @bind="titulo" @bind:event="oninput"
+                    @onkeypress="@((KeyboardEventArgs e)=> TituloKeyPress(e))"
+                    autocomplete="off"/>
         </div>
-        <div class="me-2">
-            <BPCheckbox Label="En Carterla" @bind-Value="enCartelera"/>
+        <div class="col-sm-3">
+            <select class="form-select" @bind="generoId">
+                <option value="0">-- Seleccione un género --</option>
+                @foreach (var item in generos)
+                {
+                    <option value="@item.Id">@item.Nombre</option>
+                }
+            </select>
         </div>
-            <BPCheckbox Label="Más votadas" @bind-Value="masVotadas"/>
+        <div class="col-sm-6 d-flex">
+            <div class="me-2">
+                <BPCheckbox Label="Futuros Estrenos" @bind-Value="futurosEstrenos"/>
+            </div>
+            <div class="me-2">
+                <BPCheckbox Label="En Carterla" @bind-Value="enCartelera"/>
+            </div>
+                <BPCheckbox Label="Más votadas" @bind-Value="masVotadas"/>
+        </div>
+        <div class="col-12">
+            <BPBoton OnClick="CargarNuevasPeliculas">Filtrar</BPBoton>
+            <BPBoton Variante="Variante.Error" OnClick="Limpiar">Limpiar</BPBoton>
+        </div>
     </div>
-    <div class="col-12">
-        <BPBoton OnClick="CargarNuevasPeliculas">Filtrar</BPBoton>
-        <BPBoton Variante="Variante.Error" OnClick="Limpiar">Limpiar</BPBoton>
-    </div>
-</div>
+    
+    <Paginacion PaginaActual="paginaActual"
+                CantidadTotalRegistros="cantidadTotalRegistros"
+                RegistroPorPagina="registrosPorPagina"
+                PaginaSeleccionada="PaginaSeleccionada"></Paginacion>
 
-<ListadoPeliculas Peliculas="Peliculas" />
+    <ListadoPeliculas Peliculas="Peliculas" />
+}
+
 
 @code {
     private string titulo = "";
@@ -41,43 +54,54 @@
     private bool futurosEstrenos = false;
     private bool enCartelera = false;
     private bool masVotadas = false;
+    private int paginaActual = 1;
+    private int registrosPorPagina = 10;
+    private int cantidadTotalRegistros;
 
-    private List<Genero> generos = new List<Genero>();
+    private IEnumerable<Genero>? generos = null;
     private List<Pelicula>? Peliculas;
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Simulación de carga de géneros desde una fuente de datos
-        generos = new List<Genero>{ 
-            new(){ Id = 1, Nombre = "Acción" },
-            new(){ Id = 2, Nombre = "Drama"}
-        };
+        if (!firstRender)
+        {
+            return;
+        }
 
-        // Peliculas = servicioPeliculas.ObternerPeliculas();
+        await Task.Yield();
+        generos = await servicioGeneros.ObtenerTodos();
+        await CargarNuevasPeliculas();//esto se crea despues de poner el TituloKeyPress
+        StateHasChanged();
     }
 
 
-    private void TituloKeyPress(KeyboardEventArgs e)
+    private async Task TituloKeyPress(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
         {
-            CargarNuevasPeliculas();
+            await CargarNuevasPeliculas();
         }
     }
 
-    private void CargarNuevasPeliculas()
+    private async Task CargarNuevasPeliculas()
     {
-        // Simulación de carga de películas según los filtros seleccionados
-        // Peliculas = servicioPeliculas.ObternerPeliculas()
-        // .Where(x => x.Titulo.ToLower().Contains(titulo.ToLower())).ToList();    
+        var parametrosBusqueda = new ParametrosBusquedaPeliculaDTO
+            {
+                Titulo = titulo,
+                GeneroId = generoId,
+                EnCartelera = enCartelera,
+                Estrenos = futurosEstrenos,
+                MasVotadas = masVotadas,
+                Pagina = paginaActual,
+                RestrosPorPagina = registrosPorPagina
+            };
 
-        Console.WriteLine($"titulo:{titulo}");
-        Console.WriteLine($"generoId:{generoId}");
-        Console.WriteLine($"enCartelera:{enCartelera}");
-        Console.WriteLine($"futurosEstrenos:{futurosEstrenos}");
-        Console.WriteLine($"masVotadas:{masVotadas}");
+        var respuestaPaginada = await servicioPeliculas.Buscar(parametrosBusqueda);
+        Peliculas = respuestaPaginada.Elemento.ToList();
+        cantidadTotalRegistros = respuestaPaginada.CantidadTotalRegistros;
     }
-    private void Limpiar()
+
+    private async Task Limpiar()
     {
         // Peliculas = servicioPeliculas.ObternerPeliculas();
         titulo = "";
@@ -85,5 +109,13 @@
         futurosEstrenos = false;
         enCartelera = false;
         masVotadas = false;
+        paginaActual = 1;
+        await CargarNuevasPeliculas();
+    }
+
+    private async Task PaginaSeleccionada(int pagina)
+    {
+        paginaActual = pagina;
+        await CargarNuevasPeliculas();
     }
 }
