@@ -1,6 +1,9 @@
 ﻿@page "/peliculas/buscar"
 @inject IServicioPeliculas servicioPeliculas
 @inject IServicioGeneros servicioGeneros
+@inject NavigationManager navigationManager
+@using Microsoft.AspNetCore.WebUtilities;
+
 <h3>Buscar Películas</h3>
 
 @if(generos is null)
@@ -49,11 +52,11 @@
 
 
 @code {
-    private string titulo = "";
-    private int generoId = 0;
-    private bool futurosEstrenos = false;
-    private bool enCartelera = false;
-    private bool masVotadas = false;
+    [SupplyParameterFromQuery] public string titulo { get; set; } = string.Empty;
+    [SupplyParameterFromQuery] public int generoId { get; set; } 
+    [SupplyParameterFromQuery] public bool futurosEstrenos { get; set; } 
+    [SupplyParameterFromQuery] public bool enCartelera { get; set; } 
+    [SupplyParameterFromQuery] public bool masVotadas { get; set; } 
     private int paginaActual = 1;
     private int registrosPorPagina = 10;
     private int cantidadTotalRegistros;
@@ -85,6 +88,7 @@
 
     private async Task CargarNuevasPeliculas()
     {
+        GenerarQueryStrings();
         var parametrosBusqueda = new ParametrosBusquedaPeliculaDTO
             {
                 Titulo = titulo,
@@ -117,5 +121,28 @@
     {
         paginaActual = pagina;
         await CargarNuevasPeliculas();
+    }
+
+    //manipulando query strings: es para editar la url
+    private void GenerarQueryStrings()
+    {
+        var urlBase = navigationManager.Uri.Split('?')[0];
+        var query = new Dictionary<string, string?>
+            {
+                ["titulo"] = titulo ?? string.Empty,
+                ["generoid"] = generoId.ToString(),
+                ["encartelera"] = enCartelera.ToString(),
+                ["futurosEstrenos"] = futurosEstrenos.ToString(),
+                ["masVotadas"] = masVotadas.ToString(),
+                ["pagina"] = paginaActual.ToString(),
+            };
+
+        var valoresPorDefecto = new List<string>() { "false", "", "0" };
+
+        var querySinValoresPorDefecto = query.Where(x =>
+        !valoresPorDefecto.Contains(x.Value!.ToLower())).ToDictionary();
+
+        var nuevaUrl = QueryHelpers.AddQueryString(urlBase, querySinValoresPorDefecto!);
+        navigationManager.NavigateTo(nuevaUrl);
     }
 }
