@@ -9,4 +9,6 @@ public interface IServicioPeliculas
     Task<HomeDTO> ObtenerPeliculasHome();
     Task<PeliculaDetalleDTO?> ObtenerDetalle(int id);
     Task<ResultadoPaginadoDTO<Pelicula>> Buscar(ParametrosBusquedaPeliculaDTO parametros);
+    Task<EditarPeliculaDTO?> ObtenerEditarPelicula(int id);
+    Task Actualizar(Pelicula pelicula);
 }

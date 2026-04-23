@@ -1,5 +1,7 @@
 ﻿@page "/peliculas/editar/{Id:int}"
 @inject NavigationManager navigationManager
+@inject IServicioPeliculas servicioPeliculas
+
 <h3>Editar Pelicula</h3>
 
 @if(pelicula is null)
@@ -26,33 +28,27 @@
     private List<Actor> ActoresSeleccionados = [];
 
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        pelicula = new()
+        if (!firstRender)
         {
-            Id = Id,
-            Titulo = "Peli 1",
-            FechaLanzamiento = new DateTime(2012, 05, 25),
-            EnCartelera = true,
-            Trailer = "abc",
-            PosterURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg/960px-Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg"
-        };
+            return;
+        }
 
-        GenerosNoSeleccionados = new List<Genero>
-        {
-            new Genero { Id = 1, Nombre = "Comedia" },            
-            new Genero { Id = 3, Nombre = "Acción" },
-            new Genero { Id = 4, Nombre = "Sci-fi" },
-        };
-        GenerosSeleccionados = new List<Genero>
-        {
-            new Genero { Id = 2, Nombre = "Drama" }           
-        };
+        await Task.Yield();
+        var modelo = await servicioPeliculas.ObtenerEditarPelicula(Id);
 
-        ActoresSeleccionados = new()
+        if(modelo is null)
         {
-            new(){Id = 1,Nombre = "Tom Holland", Personaje = "Peter Parker", FotoURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg/250px-Tom_Holland_during_pro-am_Wentworth_golf_club_2023-2.jpg"}
-        };
+            navigationManager.NavigateTo("/");
+            return;
+        }
+
+        pelicula = modelo.Pelicula;
+        GenerosSeleccionados = modelo.GenerosSeleccionados;
+        GenerosNoSeleccionados = modelo.GenerosNoSeleccionados;
+        ActoresSeleccionados = modelo.Actores;
+        StateHasChanged();
     }
 
     private async Task Editar()
@@ -60,18 +56,10 @@
         if (!posteoEnCurso)
         {
             posteoEnCurso = true;
-            Console.WriteLine("Ejecutando método Editar");
-            await Task.Delay(2000);
-            Console.WriteLine($"Nombre del actor: {pelicula.Titulo}");
-            Console.WriteLine($"Fecha de nacimiento del actor: {pelicula.FechaLanzamiento}");
-            Console.WriteLine($"¿Hay Imagen?: {pelicula.PosterArchivo is not null}");
-            Console.WriteLine($"En Cartelera: {pelicula.EnCartelera}");
+            StateHasChanged();
+            await Task.Yield();
 
-            Console.WriteLine("Géneros:");
-            pelicula.GenerosPelicula.ForEach(x => Console.WriteLine(x.GeneroId));
-
-            Console.WriteLine("Actores:");
-            pelicula.ActoresPelicula.ForEach(x => Console.WriteLine($"{x.ActorId} - {x.Personaje}"));
+            var browserFile = pelicula!.PosterArchivo;
 
             posteoEnCurso = false;
             formularioPosteadoConExito = true;

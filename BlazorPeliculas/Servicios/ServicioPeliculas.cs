@@ -11,6 +11,76 @@ namespace BlazorPeliculas.Servicios
     {
         private readonly string contenedor = "peliculas";
 
+        public async Task Actualizar(Pelicula pelicula)
+        {
+            if (pelicula.Archivo is not null)
+            {
+                pelicula.PosterURL = await almacenadorArchivos.Editar(pelicula.PosterURL,
+                    contenedor, pelicula.Archivo);
+            }
+            using var context = dbFactory.CreateDbContext();
+                        
+            var peliculaDB = await context.Peliculas
+                .Include(p => p.GenerosPelicula)
+                .Include(p => p.ActoresPelicula)
+                .FirstAsync(p => p.Id == pelicula.Id);
+
+            context.Entry(peliculaDB).CurrentValues.SetValues(pelicula);
+            var generosIds = pelicula.GenerosPelicula.Select(x => x.GeneroId).ToList();//obtengo los id de los generos
+            SincronizarGeneros(peliculaDB, generosIds);//peliculaDB: version actual de la pelicula en la base de datos. generosIds los ids de los generos seleccionados
+            SincronizarActores(peliculaDB, pelicula.ActoresPelicula);
+            await context.SaveChangesAsync();
+        }
+
+        private void SincronizarGeneros(Pelicula pelicula, List<int>generosIds)
+        {
+            var actuales = pelicula.GenerosPelicula.Select(x => x.GeneroId); 
+            pelicula.GenerosPelicula.RemoveAll(x => !generosIds.Contains(x.GeneroId)); //voy a remover aquellos que no se encuentren en el listado de generosid
+            var faltantes = generosIds.Except(actuales); //cuales son los nuevos
+            foreach(var generoId in faltantes)
+            {
+                pelicula.GenerosPelicula.Add(new GeneroPelicula
+                {
+                    PeliculaId = pelicula.Id,
+                    GeneroId = generoId
+                });
+            }
+        }
+
+        private void SincronizarActores(Pelicula pelicula, 
+            List<ActorPelicula> actoresSeleccionados)
+        {
+            var actuales = pelicula.ActoresPelicula.ToList();
+            var actoresSeleccionadosIds = actoresSeleccionados.Select(x => x.ActorId).ToList();
+            pelicula.ActoresPelicula.RemoveAll(x => !actoresSeleccionadosIds.Contains(x.ActorId));
+
+            foreach(var actorPelicula in pelicula.ActoresPelicula)
+            {
+                var actorPeliculaSeleccionado =
+                    actoresSeleccionados.Single(x => x.ActorId == actorPelicula.ActorId)!;
+
+                actorPelicula.Personaje = actorPeliculaSeleccionado.Personaje;
+                actorPelicula.Orden = actorPeliculaSeleccionado.Orden;
+            }
+
+            var actoresACtualesIds = pelicula.ActoresPelicula.Select(x => x.ActorId);
+            var faltantesIds = actoresSeleccionadosIds.Except(actoresACtualesIds);
+
+            foreach(var actorId in faltantesIds)
+            {
+                var actorPeliculaSeleccionado =
+                    actoresSeleccionados.Single(x => x.ActorId == actorId)!;
+
+                pelicula.ActoresPelicula.Add(new ActorPelicula
+                {
+                    PeliculaId = actorPeliculaSeleccionado.PeliculaId,
+                    ActorId = actorPeliculaSeleccionado.ActorId,
+                    Orden = actorPeliculaSeleccionado.Orden,
+                    Personaje = actorPeliculaSeleccionado.Personaje
+                });
+            };
+        }
+
         public async Task<ResultadoPaginadoDTO<Pelicula>> Buscar(ParametrosBusquedaPeliculaDTO parametros)
         {
             using var context = dbFactory.CreateDbContext();
@@ -100,6 +170,22 @@ namespace BlazorPeliculas.Servicios
             modelo.PromedioVotos = promedioVoto;
             modelo.VotoUsuario = votoUsuario;
 
+            return modelo;
+        }
+
+        public async Task<EditarPeliculaDTO?> ObtenerEditarPelicula(int id)
+        {
+            var peliculaDetalle = await ObtenerDetalle(id);
+            if (peliculaDetalle is null) { return null; }
+
+            using var context = dbFactory.CreateDbContext();
+            var generosSeleccionadosIds = peliculaDetalle!.Generos.Select(x => x.Id).ToList();
+            var generosNoSelecionados = await context.Generos
+                                        .Where(x => !generosSeleccionadosIds.Contains(x.Id))
+                                        .ToListAsync();
+
+            var modelo = new EditarPeliculaDTO(peliculaDetalle.Pelicula,
+                peliculaDetalle.Actores, peliculaDetalle.Generos, generosNoSelecionados);
             return modelo;
         }
 
