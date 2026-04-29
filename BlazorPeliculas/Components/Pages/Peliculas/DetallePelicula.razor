@@ -2,6 +2,7 @@
 @page "/peliculas/{Id:int}/{NombrePelicula}"
 @using Microsoft.AspNetCore.WebUtilities
 @inject IServicioPeliculas servicioPeliculas
+@inject NavigationManager navigationManager
 
 @if(modelo is null)
 {
@@ -9,7 +10,15 @@
 }
 else
 {
-    <h2>@modelo.Pelicula.Titulo (@modelo.Pelicula.FechaLanzamiento?.ToString("yyyy"))</h2>
+    <div class="d-flex justify-content-between">
+        <h2>@modelo.Pelicula.Titulo (@modelo.Pelicula.FechaLanzamiento?.ToString("yyyy"))</h2>
+        <div>
+            <BPLink Href=@($"/peliculas/editar/{modelo.Pelicula.Id}")>Editar</BPLink>
+            <BPBoton OnClick="Borrar"
+                MensajeConfirmacion="@($"¿Desea borrar la pelicula {modelo.Pelicula.Titulo}?")" 
+                Variante="Variante.Error">Borrar</BPBoton>
+        </div>
+    </div>
 
     foreach(var genero in modelo.Generos)
     {
@@ -79,5 +88,11 @@ else
         var query = QueryHelpers.ParseQuery(uri.Query);
         var id = query["v"].ToString();
         return $"https://www.youtube.com/embed/{id}";
+    }
+
+    private async Task Borrar()
+    {
+        await servicioPeliculas.Borrar(Id);
+        navigationManager.NavigateTo("/");
     }
 }

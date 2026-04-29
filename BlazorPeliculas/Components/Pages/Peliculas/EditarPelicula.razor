@@ -61,6 +61,12 @@
 
             var browserFile = pelicula!.PosterArchivo;
 
+            if(browserFile is not null)
+            {
+                pelicula.Archivo = browserFile.ConvertirAArchivoDTO();
+            }
+            await servicioPeliculas.Actualizar(pelicula);
+
             posteoEnCurso = false;
             formularioPosteadoConExito = true;
             StateHasChanged();

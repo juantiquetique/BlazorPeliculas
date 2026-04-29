@@ -11,4 +11,5 @@ public interface IServicioPeliculas
     Task<ResultadoPaginadoDTO<Pelicula>> Buscar(ParametrosBusquedaPeliculaDTO parametros);
     Task<EditarPeliculaDTO?> ObtenerEditarPelicula(int id);
     Task Actualizar(Pelicula pelicula);
+    Task<bool> Borrar(int id);
 }

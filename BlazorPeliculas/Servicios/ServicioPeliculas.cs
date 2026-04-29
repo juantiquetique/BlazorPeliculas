@@ -212,6 +212,21 @@ namespace BlazorPeliculas.Servicios
             };
 
             return respuesta;
-        }     
+        }
+
+        public async Task<bool> Borrar(int id)
+        {
+            using var context = dbFactory.CreateDbContext();
+            var pelicula = await context.Peliculas.FirstOrDefaultAsync(p => p.Id == id);
+            if (pelicula is null)
+            {
+                return false;
+            }
+
+            context.Remove(pelicula);
+            await context.SaveChangesAsync();
+            await almacenadorArchivos.Borrar(pelicula.PosterURL,contenedor);
+            return true;
+        }
     }
 }

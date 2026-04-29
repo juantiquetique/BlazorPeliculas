@@ -56,20 +56,13 @@
             {
                 pelicula.Archivo = browserFile.ConvertirAArchivoDTO();
             }
-            try
-            {
-                await servicioPeliculas.Crear(pelicula);
-            }
-
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
+           
+            var id = await servicioPeliculas.Crear(pelicula);
+            
             posteoEnCurso = false;
             formularioPosteadoConExito = true;
             StateHasChanged();
-            navigationManager.NavigateTo("/peliculas");
+            navigationManager.NavigateTo($"/peliculas/{id}");
         }
     }
 
