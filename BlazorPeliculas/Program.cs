@@ -1,7 +1,11 @@
 using BlazorPeliculas;
 using BlazorPeliculas.Components;
+using BlazorPeliculas.Components.Account;
 using BlazorPeliculas.Datos;
+using BlazorPeliculas.Entidades;
 using BlazorPeliculas.Servicios;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
@@ -11,6 +15,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
+    .AddIdentityCookies();
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
 //AddDbContextFactory: es la manera recomendad de usar entity framework core en un modelo como blazor server o que use interactividad con el servidor
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opciones => opciones.UseSqlServer("name=DefaultConnection"));
 
@@ -19,6 +43,8 @@ builder.Services.AddScoped<IServicioGeneros, ServicioGeneros>();
 builder.Services.AddScoped<IServicioActores, ServicioActores>();
 
 builder.Services.AddScoped<IAlmacenadorArchivos, AlmacenadorArchivosLocal>();//se agrega el servicio de almacenamiento de archivos local
+
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -42,5 +68,7 @@ app.MapStaticAssets();
 app.UseStaticFiles();//se agrega para que el servidor pueda servir los archivos estáticos como css, js, imágenes, etc localmente
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapAdditionalIdentityEndpoints();
 
 app.Run();

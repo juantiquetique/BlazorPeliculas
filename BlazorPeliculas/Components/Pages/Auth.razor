@@ -1,0 +1,38 @@
+﻿@page "/auth"
+@attribute [StreamRendering]
+@using Microsoft.AspNetCore.Authorization
+
+@* @attribute [Authorize] *@
+
+<PageTitle>Auth</PageTitle>
+
+<h1>@mensajeAutentication</h1>
+
+<hr />
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        Hello @context.User.Identity?.Name!
+    </Authorized>
+    <NotAuthorized>
+        Usted no está autorizado
+    </NotAuthorized>
+    <Authorizing>
+        Autenticando...
+    </Authorizing>
+</AuthorizeView>
+
+@code{
+    private string mensajeAutentication = "Autenticando...";
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(2000);
+        var authenticationState = await AuthenticationStateTask!;
+        var usuariosEstaAutenticado = authenticationState.User.Identity is not null
+                                        && authenticationState.User.Identity.IsAuthenticated;
+        mensajeAutentication = usuariosEstaAutenticado ? "Usted está autenticado" : "Usuario no autenticado";
+    }
+}
