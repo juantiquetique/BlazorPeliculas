@@ -31,12 +31,47 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     options.SignIn.RequireConfirmedAccount = true;
     options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
 })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
 //AddDbContextFactory: es la manera recomendad de usar entity framework core en un modelo como blazor server o que use interactividad con el servidor
-builder.Services.AddDbContextFactory<ApplicationDbContext>(opciones => opciones.UseSqlServer("name=DefaultConnection"));
+builder.Services.AddDbContextFactory<ApplicationDbContext>(opciones => 
+opciones.UseSqlServer("name=DefaultConnection")
+.UseSeeding((context,_) =>
+{
+    var rolAdmin = "administrador";
+    var roles = context.Set<IdentityRole>();
+    var existeRolAdmin = roles.Any(r => r.Name == rolAdmin);
+
+    if(!existeRolAdmin)
+    {
+        roles.Add(new IdentityRole
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = rolAdmin,
+            NormalizedName = rolAdmin.ToUpperInvariant()
+        });
+        context.SaveChanges();
+    }
+}).UseAsyncSeeding(async (context, _, ct) => 
+{
+    var rolAdmin = "administrador";
+    var roles = context.Set<IdentityRole>();
+    var existeRolAdmin = await roles.AnyAsync(r => r.Name == rolAdmin, ct);
+
+    if (!existeRolAdmin)
+    {
+        roles.Add(new IdentityRole
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = rolAdmin,
+            NormalizedName = rolAdmin.ToUpperInvariant()
+        });
+        await context.SaveChangesAsync(ct);
+    }
+}));
 
 builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculas>();
 builder.Services.AddScoped<IServicioGeneros, ServicioGeneros>();
@@ -52,13 +87,22 @@ builder.Services.AddMudServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    if(dbContext.Database.IsRelational())
+    {
+        dbContext.Database.Migrate();
+    }
 }
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 

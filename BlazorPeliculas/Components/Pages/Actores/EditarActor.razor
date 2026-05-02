@@ -1,6 +1,7 @@
 ﻿@page "/actores/editar/{Id:int}"
 @inject NavigationManager navigationManager
 @inject IServicioActores servicioActores
+@attribute [Authorize(Roles = "administrador")]
 
 <h3>Editar Actor</h3>
 

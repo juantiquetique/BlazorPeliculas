@@ -3,6 +3,7 @@
 @inject IServicioGeneros servicioGeneros
 @inject IServicioPeliculas servicioPeliculas
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "administrador")]
 
 <h3>CrearPelicula</h3>
 

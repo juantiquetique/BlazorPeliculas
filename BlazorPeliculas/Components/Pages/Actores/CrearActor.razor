@@ -1,6 +1,7 @@
 ﻿@page "/actores/crear"
 @inject NavigationManager navigationManager
 @inject IServicioActores servicioActores
+@attribute [Authorize(Roles = "administrador")]
 
 <h3>Crear Actor</h3>
 

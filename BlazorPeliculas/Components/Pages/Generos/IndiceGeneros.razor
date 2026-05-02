@@ -1,6 +1,8 @@
 ﻿@page "/generos"
 @using BlazorPeliculas.DTOs
 @inject IServicioGeneros servicioGeneros
+@attribute [Authorize(Roles = "administrador")]
+
 
 <h3>Indice Generos</h3>
 

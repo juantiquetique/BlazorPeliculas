@@ -1,6 +1,7 @@
 ﻿@page "/generos/editar/{Id:int}"
 @inject IServicioGeneros servicioGeneros
 @inject NavigationManager navigationManager
+@attribute [Authorize(Roles = "administrador")]
 
 <h3>Editar Género</h3>
 

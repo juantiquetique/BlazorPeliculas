@@ -5,6 +5,7 @@
 @rendermode InteractiveServer
 @* @inject IDbContextFactory<ApplicationDbContext> DbFactory// El DbContextFactory se inyecta para crear instancias de ApplicationDbContext de manera eficiente y controlada. *@
 @inject IServicioGeneros servicioGeneros
+@attribute [Authorize(Roles = "administrador")]
 
 @inject NavigationManager navigationManager
 

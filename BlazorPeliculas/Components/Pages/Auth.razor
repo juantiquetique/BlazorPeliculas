@@ -1,5 +1,5 @@
 ﻿@page "/auth"
-@attribute [StreamRendering]
+@* @attribute [StreamRendering] *@
 @using Microsoft.AspNetCore.Authorization
 
 @* @attribute [Authorize] *@
@@ -10,9 +10,25 @@
 
 <hr />
 
-<AuthorizeView Roles="admin">
+<AuthorizeView>
     <Authorized>
         Hello @context.User.Identity?.Name!
+
+        <hr />
+
+        Claims del usuario:
+
+        <ul>
+            @foreach (var claim in context.User.Claims)
+            {
+                <li>@claim.Type: @claim.Value</li>
+            }
+        </ul>
+
+        @if(tienePassword)
+        {
+            <p>El usuario se ha autenticado con cuenta propia usando un password.</p>
+        }
     </Authorized>
     <NotAuthorized>
         Usted no está autorizado
@@ -24,6 +40,7 @@
 
 @code{
     private string mensajeAutentication = "Autenticando...";
+    private bool tienePassword = false;
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
 
@@ -34,5 +51,16 @@
         var usuariosEstaAutenticado = authenticationState.User.Identity is not null
                                         && authenticationState.User.Identity.IsAuthenticated;
         mensajeAutentication = usuariosEstaAutenticado ? "Usted está autenticado" : "Usuario no autenticado";
+
+        if(usuariosEstaAutenticado)
+        {
+            //Nota: esto se puede hacer con policy (lo veremos mas adelante)
+            var claimAMR = authenticationState.User.Claims.FirstOrDefault(c => c.Type == "amr");
+
+            if(claimAMR is not null && claimAMR.Value == "pwd")
+            {
+                tienePassword = true;
+            }
+        }
     }
 }
