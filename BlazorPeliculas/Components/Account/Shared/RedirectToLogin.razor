@@ -1,8 +1,25 @@
 ﻿@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<form action="Account/Logout" method="post" id="logout-form">
+    <AntiforgeryToken />
+    <input type="hidden" name="ReturnUrl" value="account/login" />
+</form>
 
 @code {
-    protected override void OnInitialized()
+    // protected override void OnInitialized()
+    // {
+    //     NavigationManager.NavigateTo($"Account/Login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+    // }
+
+    // OnAfterRenderAsync se usa para ejecutar código de JavaScript después de que el componente se ha renderizado y tener conexion con el navegador.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        NavigationManager.NavigateTo($"Account/Login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+        if (!firstRender)
+        {
+            return;
+        }
+
+        await JS.InvokeVoidAsync("postearForm", "logout-form");
     }
 }

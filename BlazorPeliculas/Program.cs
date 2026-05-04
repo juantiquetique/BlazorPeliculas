@@ -41,11 +41,13 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(opciones =>
 opciones.UseSqlServer("name=DefaultConnection")
 .UseSeeding((context,_) =>
 {
+    //aqui manualmente se cre el rol de administrador
+    //con el dateseeding nos permite insertar datos a nuestra base de datos cuando son datos de configuracion
     var rolAdmin = "administrador";
-    var roles = context.Set<IdentityRole>();
+    var roles = context.Set<IdentityRole>();//se obtiene el conjunto de roles de la base de datos para verificar si ya existe el rol de administrador
     var existeRolAdmin = roles.Any(r => r.Name == rolAdmin);
-
-    if(!existeRolAdmin)
+    //si no existe el rol de administrador se crea y se guarda en la base de datos
+    if (!existeRolAdmin)
     {
         roles.Add(new IdentityRole
         {
@@ -76,6 +78,7 @@ opciones.UseSqlServer("name=DefaultConnection")
 builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculas>();
 builder.Services.AddScoped<IServicioGeneros, ServicioGeneros>();
 builder.Services.AddScoped<IServicioActores, ServicioActores>();
+builder.Services.AddScoped<IServicioSeguridad, ServicioSeguridad>();
 
 builder.Services.AddScoped<IAlmacenadorArchivos, AlmacenadorArchivosLocal>();//se agrega el servicio de almacenamiento de archivos local
 
@@ -87,6 +90,9 @@ builder.Services.AddMudServices();
 
 var app = builder.Build();
 
+//aqui se ejecuta la migracion de la base de datos al iniciar la aplicacion,
+//se crea un scope para obtener el dbcontext y ejecutar la migracion,
+//esto es necesario para que la aplicacion pueda crear las tablas en la base de datos si no existen
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
