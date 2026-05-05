@@ -1,11 +1,15 @@
 using BlazorPeliculas;
 using BlazorPeliculas.Components;
 using BlazorPeliculas.Components.Account;
+using BlazorPeliculas.Constantes;
 using BlazorPeliculas.Datos;
 using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Politicas;
 using BlazorPeliculas.Servicios;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
@@ -25,6 +29,25 @@ builder.Services.AddAuthentication(options =>
     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
     .AddIdentityCookies();
+
+builder.Services.AddAuthorization(opciones =>
+{
+    opciones.AddPolicy("PuedeEditarRoles",politica =>
+    {
+        politica.RequireAssertion(contexto =>
+        {
+            return contexto.User.IsInRole(Roles.ROL_ADMIN) || 
+                    contexto.User.HasClaim(c => c.Type == "superadmin");
+        });
+    });
+
+    opciones.AddPolicy("PuedeEditarRolesDB", policy =>
+    {
+        policy.AddRequirements(new PuedeEditarRolesRequirement());
+    });
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, PuedeEditarRolesHandler>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
@@ -79,6 +102,7 @@ builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculas>();
 builder.Services.AddScoped<IServicioGeneros, ServicioGeneros>();
 builder.Services.AddScoped<IServicioActores, ServicioActores>();
 builder.Services.AddScoped<IServicioSeguridad, ServicioSeguridad>();
+builder.Services.AddTransient<IEmailSender, ServicioCorreos>();
 
 builder.Services.AddScoped<IAlmacenadorArchivos, AlmacenadorArchivosLocal>();//se agrega el servicio de almacenamiento de archivos local
 

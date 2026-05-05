@@ -1,6 +1,8 @@
 ﻿@page "/usuarios"
+@using BlazorPeliculas.Constantes
 @inject IServicioSeguridad servicioSeguridad
-@attribute [Authorize(Roles = "administrador")]
+@attribute [Authorize(Policy = "PuedeEditarRoles")]
+@inject NavigationManager navigationManager
 
 <h3>IndiceUsuarios</h3>
 
@@ -72,11 +74,19 @@
 
     private async Task HacerAdmin(string email)
     {
-        await servicioSeguridad.HacerAdmin(email);
+        var resultadoAccion = await servicioSeguridad.HacerAdmin(email);
+        if (resultadoAccion == ResultadoAccion.NoTienePermiso)
+        {
+            navigationManager.NavigateTo("forzar-deslogueo");
+        }
     }
     
     private async Task RemoverAdmin(string email)
     {
-        await servicioSeguridad.RemoverAdmin(email);
+        var resultadoAccion = await servicioSeguridad.RemoverAdmin(email);
+        if (resultadoAccion == ResultadoAccion.NoTienePermiso)
+        {
+            navigationManager.NavigateTo("forzar-deslogueo");
+        }
     }
 }

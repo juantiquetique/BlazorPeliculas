@@ -15,7 +15,7 @@ namespace BlazorPeliculas.Components.Account
             IOptions<IdentityOptions> options)
         : RevalidatingServerAuthenticationStateProvider(loggerFactory)
     {
-        protected override TimeSpan RevalidationInterval => TimeSpan.FromSeconds(30);
+        protected override TimeSpan RevalidationInterval => TimeSpan.FromMinutes(5);
 
         protected override async Task<bool> ValidateAuthenticationStateAsync(
             AuthenticationState authenticationState, CancellationToken cancellationToken)
