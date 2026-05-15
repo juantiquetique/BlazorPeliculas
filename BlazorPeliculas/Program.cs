@@ -102,6 +102,7 @@ builder.Services.AddScoped<IServicioPeliculas, ServicioPeliculas>();
 builder.Services.AddScoped<IServicioGeneros, ServicioGeneros>();
 builder.Services.AddScoped<IServicioActores, ServicioActores>();
 builder.Services.AddScoped<IServicioSeguridad, ServicioSeguridad>();
+builder.Services.AddScoped<IServicioVotos, ServicioVotos>();
 builder.Services.AddTransient<IEmailSender, ServicioCorreos>();
 
 builder.Services.AddScoped<IAlmacenadorArchivos, AlmacenadorArchivosLocal>();//se agrega el servicio de almacenamiento de archivos local

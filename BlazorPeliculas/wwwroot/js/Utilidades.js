@@ -10,3 +10,11 @@ window.postearForm = (formId) => {
         form.submit();
     }
 };
+
+window.mostrarAlerta = (title, text, icon) => {
+    Swal.fire({
+        title,
+        text,
+        icon
+    });
+};

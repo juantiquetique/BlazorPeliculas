@@ -21,6 +21,7 @@ public class Pelicula
 
     public List<GeneroPelicula> GenerosPelicula { get; set; } = [];
     public List<ActorPelicula> ActoresPelicula { get; set; } = [];
+    public List<VotoPelicula> VotosPelicula { get; set; } = [];
 
     //se crea para remplazar los espacios con - para ponerlo a la url
     //ahora se crea en PeliculaIndividual el ObtenerUrl

@@ -28,5 +28,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Pelicula> Peliculas{ get; set; }
     public DbSet<GeneroPelicula> GenerosPeliculas{ get; set; }
     public DbSet<ActorPelicula> ActoresPeliculas{ get; set; }
+    public DbSet<VotoPelicula> VotosPeliculas{ get; set; }
 
 }

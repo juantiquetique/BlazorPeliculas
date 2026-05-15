@@ -2,6 +2,8 @@
 @page "/peliculas/{Id:int}/{NombrePelicula}"
 @using Microsoft.AspNetCore.WebUtilities
 @inject IServicioPeliculas servicioPeliculas
+@inject IServicioVotos servicioVotos
+@inject IJSRuntime JS
 @inject NavigationManager navigationManager
 
 @if(modelo is null)
@@ -31,7 +33,9 @@ else
     <span>
         | @modelo.Pelicula.FechaLanzamiento?.ToString("dd MMM yyyy")
         | Promedio: @modelo.PromedioVotos.ToString("0.#")/5
-        | Tu voto: @modelo.VotoUsuario.ToString()
+        | Tu voto: <Rating MaximoPuntaje="5" PuntajeSeleccionado="@modelo.VotoUsuario" 
+        OnRating ="OnRating"
+        />
     </span>
 
     <div class="d-flex mt-2">
@@ -71,6 +75,9 @@ else
     [Parameter] public string? NombrePelicula { get; set; }
     private PeliculaDetalleDTO? modelo;
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(!firstRender)
@@ -96,5 +103,22 @@ else
     {
         await servicioPeliculas.Borrar(Id);
         navigationManager.NavigateTo("/");
+    }
+
+    private async Task OnRating(int voto)
+    {
+        var authenticationState = await AuthenticationStateTask!;// obtenemos el estado de autenticación del usuario
+        var usuarioEstaAutenticado = authenticationState.User.Identity is not null && authenticationState.User.Identity.IsAuthenticated; // verificamos si el usuario está autenticado
+
+        if(usuarioEstaAutenticado)
+        {
+            var votoPeliculaDTO = new VotoPeliculaDTo(Id, voto);
+            await servicioVotos.Votar(votoPeliculaDTO);
+            await JS.MostrarAlertaExitosa("Exitoso","La votación fue guardada con éxito");
+        }else
+        {
+            await JS.MostrarAlertaError("Error","Debe loguearse para poder votar");
+        }
+
     }
 }

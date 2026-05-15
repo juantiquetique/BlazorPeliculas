@@ -3,11 +3,13 @@ using BlazorPeliculas.DTOs;
 using BlazorPeliculas.Entidades;
 using BlazorPeliculas.Utilidades;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace BlazorPeliculas.Servicios
 {
+    //IHttpContextAccessor: para obtener el usuario principal
     public class ServicioPeliculas(IDbContextFactory<ApplicationDbContext> dbFactory,
-        IAlmacenadorArchivos almacenadorArchivos) : IServicioPeliculas
+        IAlmacenadorArchivos almacenadorArchivos, IHttpContextAccessor httpContextAccessor) : IServicioPeliculas
     {
         private readonly string contenedor = "peliculas";
 
@@ -110,7 +112,12 @@ namespace BlazorPeliculas.Servicios
                     p.GenerosPelicula.Select(gp => gp.GeneroId).Contains(parametros.GeneroId));
             }
 
-            //TODO: implementar votación
+            //se implemento votación
+            if(parametros.MasVotadas)
+            {
+                ///ordena de forma descendente las peliculas según el promedio de votos
+                peliculasQueryable = peliculasQueryable.OrderByDescending(p => p.VotosPelicula.Average(vp => vp.Voto));
+            }
 
             var peliculas = await peliculasQueryable.Paginar(parametros.PaginacionDTO).ToListAsync();
             var conteo = await peliculasQueryable.CountAsync();
@@ -152,9 +159,35 @@ namespace BlazorPeliculas.Servicios
                 return null;
             }
 
-            //TODO: Sistema de Votacion
-            var promedioVoto = 4;
-            var votoUsuario = 5;
+            // Sistema de Votacion
+            var promedioVoto = 0.0;
+            var votoUsuario = 0;
+
+            //realiza la conexion a la base de datos va a la tabla VotosPeliculas para obtener el voto del usuario logueado
+            //con la x crea un "alias" para la tabla VotosPeliculas, luego se filtra por el campo PeliculaId
+            if (await context.VotosPeliculas.AnyAsync(x => x.PeliculaId == id)) 
+            {
+                //si existen votos para esa pelicula, se calcula el promedio de los votos utilizando el método AverageAsync,
+                //que toma el campo Voto de la tabla VotosPeliculas.
+                promedioVoto = await context.VotosPeliculas.Where(x => x.PeliculaId == id)
+                    .AverageAsync(x => x.Voto);
+
+                //si el usuario esta autenticado, se obtiene el id del usuario logueado y se busca en la tabla VotosPeliculas si existe un voto para esa película y ese usuario.
+                if (httpContextAccessor.HttpContext is not null && httpContextAccessor.HttpContext.User.Identity!.IsAuthenticated)
+                {
+                    var usuarioId = httpContextAccessor.HttpContext
+                        .User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                    //busca en la tabla VotosPeliculas un registro que coincida con el id de la película y el id del usuario, utilizando el método FirstOrDefaultAsync.
+                    var votoUsuarioDB = await context.VotosPeliculas
+                        .FirstOrDefaultAsync(x => x.PeliculaId == id && x.UsuarioId == usuarioId);
+
+                    if (votoUsuarioDB is not null)
+                    {
+                        votoUsuario = votoUsuarioDB.Voto;
+                    }
+                }
+            }
 
             var modelo = new PeliculaDetalleDTO();
             modelo.Pelicula = pelicula;
