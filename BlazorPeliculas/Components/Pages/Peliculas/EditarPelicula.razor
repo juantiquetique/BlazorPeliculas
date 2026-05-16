@@ -1,4 +1,5 @@
 ﻿@page "/peliculas/editar/{Id:int}"
+@rendermode InteractiveServer
 @inject NavigationManager navigationManager
 @inject IServicioPeliculas servicioPeliculas
 @attribute [Authorize(Roles = "administrador")]

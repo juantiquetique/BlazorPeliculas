@@ -1,4 +1,5 @@
 ﻿@page "/generos/editar/{Id:int}"
+@rendermode InteractiveServer
 @inject IServicioGeneros servicioGeneros
 @inject NavigationManager navigationManager
 @attribute [Authorize(Roles = "administrador")]

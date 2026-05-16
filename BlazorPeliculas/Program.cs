@@ -16,8 +16,13 @@ using MudBlazor.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//las siguientes dos lineas se comentan porque ahora nuestro proyecto va poder usar WebAssembly con las otras 4 lineas del builder(cap. 151 curso)
+//builder.Services.AddRazorComponents()
+//    .AddInteractiveServerComponents();
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -141,8 +146,15 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.UseStaticFiles();//se agrega para que el servidor pueda servir los archivos estáticos como css, js, imágenes, etc localmente
+
+//las siguientes dos lineas se comentan porque ahora nuestro proyecto va poder usar WebAssembly con las otras 4 lineas del builder(cap. 151 curso)
+//app.MapRazorComponents<App>()
+//    .AddInteractiveServerRenderMode();
+
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(BlazorPeliculas.Client._Imports).Assembly);//me permite servir los componentes que se encuentren en el proyecto de client, desde el servidor
 
 app.MapAdditionalIdentityEndpoints();
 

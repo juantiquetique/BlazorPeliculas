@@ -1,6 +1,8 @@
 ﻿@page "/peliculas/{Id:int}"
 @page "/peliculas/{Id:int}/{NombrePelicula}"
-@using Microsoft.AspNetCore.WebUtilities
+@rendermode InteractiveServer
+@* se deja de usar WebUtilities porque ahora se va a migrar al client WebAssembly donde no se usa del todo el poder del .net completo*@
+@* @using Microsoft.AspNetCore.WebUtilities *@
 @inject IServicioPeliculas servicioPeliculas
 @inject IServicioVotos servicioVotos
 @inject IJSRuntime JS
@@ -94,9 +96,31 @@ else
     private string TransformarURLTrailer(string url)
     {
         var uri = new Uri(url);
-        var query = QueryHelpers.ParseQuery(uri.Query);
-        var id = query["v"].ToString();
-        return $"https://www.youtube.com/embed/{id}";
+
+        //se comenta porque se deja de usar WebUtilities para parsear la query string, ya que se va a migrar al client WebAssembly donde no se usa del todo el poder del .net completo
+        // var query = QueryHelpers.ParseQuery(uri.Query);
+        // var id = query["v"].ToString();
+
+        //por lo tanto se agrega los siguientes pasos para obtener el id del video de youtube a partir de la url
+        var query = uri.Query.TrimStart('?'); // TrimStart() elimina Inicio   // TrimEnd()   elimina Final  // Trim()  elimina Inicio y final
+
+        // llave1=valor1&llave2=valor2&...
+        // Split() divide una cadena en subcadenas basándose en un delimitador específico, en este caso el '&' que separa cada par de clave-valor en la query string. 
+        // El StringSplitOptions.RemoveEmptyEntries se utiliza para omitir cualquier entrada vacía que pueda resultar de dividir la cadena.
+        var pares = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach(var par in pares)
+        {
+            var partes = par.Split('=', 2);//el 2 significa que se va a dividir en 2 partes, la primera parte será la llave y la segunda parte será el valor, incluso si el valor contiene el caracter '='
+            var llave = partes[0];
+            var valor = partes[1];
+
+            if(llave == "v")
+            {
+                return $"https://www.youtube.com/embed/{valor}";                
+            }
+        }
+        return url;
     }
 
     private async Task Borrar()

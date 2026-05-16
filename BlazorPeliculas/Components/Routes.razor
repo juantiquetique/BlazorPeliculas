@@ -1,5 +1,8 @@
 ﻿@using BlazorPeliculas.Components.Account.Shared
-<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+@*AdditionalAssemblies: para poder cargar los componentes en nuestra aplicacion desde el servidor para poder navegar a cualquier componente ruteable que se encuentre en el proyecto CLient *@
+<Router AppAssembly="typeof(Program).Assembly"
+        AdditionalAssemblies="new[] {typeof(Client._Imports).Assembly}"
+NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
             <NotAuthorized>

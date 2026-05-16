@@ -1,8 +1,11 @@
 ﻿@page "/peliculas/buscar"
+@rendermode InteractiveServer
 @inject IServicioPeliculas servicioPeliculas
 @inject IServicioGeneros servicioGeneros
 @inject NavigationManager navigationManager
-@using Microsoft.AspNetCore.WebUtilities;
+
+@* se deja de usar WebUtilities porque ahora se va a migrar al client WebAssembly donde no se usa del todo el poder del .net completo*@
+@* @using Microsoft.AspNetCore.WebUtilities; *@
 
 <h3>Buscar Películas</h3>
 
@@ -127,7 +130,8 @@
     private void GenerarQueryStrings()
     {
         var urlBase = navigationManager.Uri.Split('?')[0];
-        var query = new Dictionary<string, string?>
+        // se cambia el segundo parametro del dictionary string por object ya que con string generaba problemas con el "querySinValoresPorDefecto". (esto para no usar WebUtilities)
+        var query = new Dictionary<string, object?>
             {
                 ["titulo"] = titulo ?? string.Empty,
                 ["generoid"] = generoId.ToString(),
@@ -138,11 +142,15 @@
             };
 
         var valoresPorDefecto = new List<string>() { "false", "", "0" };
-
+        //se añade el ToString() al x.Value para convertirlo a string, y luego se le aplica el ToLower() para comparar con los valores por defecto en minuscula (esto para no usar WebUtilities)
         var querySinValoresPorDefecto = query.Where(x =>
-        !valoresPorDefecto.Contains(x.Value!.ToLower())).ToDictionary();
+        !valoresPorDefecto.Contains(x.Value!.ToString()!.ToLower())).ToDictionary();
 
-        var nuevaUrl = QueryHelpers.AddQueryString(urlBase, querySinValoresPorDefecto!);
+        //se comenta porque se va a dejar de usar wl WebUtilities para manipular los query strings, ya que se va a migrar al client WebAssembly donde no se usa del todo el poder del .net completo (esto para no usar WebUtilities)
+        // var nuevaUrl = QueryHelpers.AddQueryString(urlBase, querySinValoresPorDefecto!);
+
+        var nuevaUrl = navigationManager.GetUriWithQueryParameters(querySinValoresPorDefecto);
+
         navigationManager.NavigateTo(nuevaUrl);
     }
 }
