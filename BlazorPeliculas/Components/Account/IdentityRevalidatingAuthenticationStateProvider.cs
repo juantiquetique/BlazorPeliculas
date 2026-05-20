@@ -1,3 +1,4 @@
+using BlazorPeliculas.Client.Entidades;
 using BlazorPeliculas.Entidades;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;

@@ -1,7 +1,8 @@
 ﻿using BlazorPeliculas.Constantes;
-using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Client.Entidades;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using BlazorPeliculas.Entidades;
 
 namespace BlazorPeliculas.Politicas;
 

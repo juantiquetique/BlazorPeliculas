@@ -1,0 +1,52 @@
+﻿@page "/generos/crear"
+@rendermode InteractiveServer
+@* @inject IDbContextFactory<ApplicationDbContext> DbFactory// El DbContextFactory se inyecta para crear instancias de ApplicationDbContext de manera eficiente y controlada. *@
+@inject IServicioGeneros servicioGeneros
+@attribute [Authorize(Roles = "administrador")]
+
+@inject NavigationManager navigationManager
+
+<h3>CrearGenero</h3>
+
+<FormularioGenero FormularioPosteadoConExito="formularioPosteadoConExito" 
+    PosteoEnCurso="posteoEnCurso"
+    OnValidSubmit="Crear" Genero="genero"/>
+
+@code {
+    private Genero genero = null!;
+
+    private bool posteoEnCurso = false;
+    private bool formularioPosteadoConExito = false;
+
+    protected override void OnInitialized()
+    {
+        genero = new Genero();
+    }
+
+    private async Task Crear()
+    {
+        if (!posteoEnCurso)
+        {            
+            posteoEnCurso = true;
+            //esto es para mantener una experencia de usuario fluida, para que el formulario se deshabilite 
+            // y muestre un mensaje de "cargando" mientras se realiza la operación de base de datos
+            StateHasChanged();
+            await Task.Yield(); // Permite que el UI se actualice antes de realizar la operación de base de datos
+            //***************************************/
+
+            //esto es para usar Entity Frmework Core en un componente de blazor
+            // se instancia el dbcontex por un momento y luego se termina utilizando el factory, se agrega el nuevo género y se guardan los cambios
+            // using var context = DbFactory.CreateDbContext();
+            // context.Add(genero);
+            // await context.SaveChangesAsync();
+
+            await servicioGeneros.Crear(genero);
+
+            posteoEnCurso = false;
+            formularioPosteadoConExito = true;
+            StateHasChanged();
+            navigationManager.NavigateTo("/generos");
+            //************************************************/
+        }
+    }
+}

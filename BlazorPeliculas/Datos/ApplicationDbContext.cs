@@ -1,4 +1,5 @@
-﻿using BlazorPeliculas.Entidades;
+﻿using BlazorPeliculas.Client.Entidades;
+using BlazorPeliculas.Entidades;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

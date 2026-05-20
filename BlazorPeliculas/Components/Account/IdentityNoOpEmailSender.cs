@@ -1,3 +1,4 @@
+using BlazorPeliculas.Client.Entidades;
 using BlazorPeliculas.Entidades;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;

@@ -1,7 +1,7 @@
 ﻿using BlazorPeliculas.Client.DTOs;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace BlazorPeliculas.Utilidades;
+namespace BlazorPeliculas.Client.Utilidades;
 
 public static class ArchivosExtensions
 {

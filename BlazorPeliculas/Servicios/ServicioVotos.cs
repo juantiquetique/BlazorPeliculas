@@ -1,8 +1,9 @@
 ﻿using BlazorPeliculas.Datos;
-using BlazorPeliculas.DTOs;
-using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Client.DTOs;
+using BlazorPeliculas.Client.Entidades;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using BlazorPeliculas.Client.Servicios;
 
 namespace BlazorPeliculas.Servicios;
 //IHttpContextAccessor: se usa para acceder al contexto HTTP actual, lo que permite obtener información sobre el usuario autenticado y otros detalles de la solicitud.

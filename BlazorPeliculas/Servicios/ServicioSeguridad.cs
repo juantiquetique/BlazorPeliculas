@@ -1,11 +1,13 @@
 ﻿using BlazorPeliculas.Constantes;
 using BlazorPeliculas.Datos;
-using BlazorPeliculas.DTOs;
-using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Client.DTOs;
+using BlazorPeliculas.Client.Entidades;
 using BlazorPeliculas.Utilidades;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Client.Servicios;
 
 namespace BlazorPeliculas.Servicios;
 //el usermanager es el que nos permite realizar operaciones sobre los usuarios en este caso vamos agregar y remover el rol administrador aun usuario, el dbcontextfactory es para crear instancias del contexto de la base de datos.

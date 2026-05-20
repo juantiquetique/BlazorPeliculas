@@ -1,4 +1,4 @@
-﻿using BlazorPeliculas.DTOs;
+﻿using BlazorPeliculas.Client.DTOs;
 
 namespace BlazorPeliculas.Servicios
 {

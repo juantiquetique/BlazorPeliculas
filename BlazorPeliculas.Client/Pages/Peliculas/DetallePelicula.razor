@@ -1,0 +1,155 @@
+﻿@page "/peliculas/{Id:int}"
+@page "/peliculas/{Id:int}/{NombrePelicula}"
+@rendermode InteractiveAuto
+@* se deja de usar WebUtilities porque ahora se va a migrar al client WebAssembly donde no se usa del todo el poder del .net completo*@
+@* @using Microsoft.AspNetCore.WebUtilities *@
+@inject IServicioPeliculas servicioPeliculas
+@inject IServicioVotos servicioVotos
+@inject IJSRuntime JS
+@inject NavigationManager navigationManager
+
+@if(modelo is null)
+{
+    <Cargando />
+}
+else
+{
+    <h2>@RendererInfo.Name</h2>
+    <div class="d-flex justify-content-between">
+        <h2>@modelo.Pelicula.Titulo (@modelo.Pelicula.FechaLanzamiento?.ToString("yyyy"))</h2>
+        <div>
+            <AuthorizeView Roles="administrador">
+                <BPLink Href=@($"/peliculas/editar/{modelo.Pelicula.Id}")>Editar</BPLink>
+                <BPBoton OnClick="Borrar"
+                    MensajeConfirmacion="@($"¿Desea borrar la pelicula {modelo.Pelicula.Titulo}?")" 
+                    Variante="Variante.Error">Borrar</BPBoton>
+            </AuthorizeView>
+        </div>
+    </div>
+
+    foreach(var genero in modelo.Generos)
+    {
+        <a class="me-2 badge bg-primary rounded-pill text-decoration-none"
+            href="peliculas/buscar?generoid=@genero.Id">@genero.Nombre</a>
+    }
+
+    <span>
+        | @modelo.Pelicula.FechaLanzamiento?.ToString("dd MMM yyyy")
+        | Promedio: @modelo.PromedioVotos.ToString("0.#")/5
+        | Tu voto: <Rating MaximoPuntaje="5" PuntajeSeleccionado="@modelo.VotoUsuario" 
+        OnRating ="OnRating"
+        />
+    </span>
+
+    <div class="d-flex mt-2">
+        <span style="display: inline-block;" class="me-2">
+            <img src="@modelo.Pelicula.PosterURL" style="width: 225px; height: 315px"/>
+        </span>
+
+        @if(!string.IsNullOrEmpty(modelo.Pelicula.Trailer))
+        {
+            <iframe style="width: 560px; height: 315px"
+            src="@TransformarURLTrailer(modelo.Pelicula.Trailer)" title="YouTube video player"
+                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        }
+    </div>
+
+    @if(modelo.Actores.Any())
+    {
+        <div class="mt-2">
+            <h3>Actores</h3>
+            <div class="d-flex flex-column">
+                @foreach(var actor in modelo.Actores)
+                {
+                    <div class="mb-2">
+                        <img style="width: 50px;" src="@actor.FotoURL"/>
+                        <span style="display: inline-block; width: 200px;">@actor.Nombre</span>                        
+                        <span style="display: inline-block; width: 45px;">...</span>                        
+                        <span>@actor.Personaje</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    [Parameter] public string? NombrePelicula { get; set; }
+    private PeliculaDetalleDTO? modelo;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender)
+        {
+            return;
+        }
+
+        await Task.Yield();
+        modelo = await servicioPeliculas.ObtenerDetalle(Id);
+
+        if(modelo is null)
+        {
+            navigationManager.NavigateTo("/");
+        }
+
+        StateHasChanged();
+    }
+
+
+    private string TransformarURLTrailer(string url)
+    {
+        var uri = new Uri(url);
+
+        //se comenta porque se deja de usar WebUtilities para parsear la query string, ya que se va a migrar al client WebAssembly donde no se usa del todo el poder del .net completo
+        // var query = QueryHelpers.ParseQuery(uri.Query);
+        // var id = query["v"].ToString();
+
+        //por lo tanto se agrega los siguientes pasos para obtener el id del video de youtube a partir de la url
+        var query = uri.Query.TrimStart('?'); // TrimStart() elimina Inicio   // TrimEnd()   elimina Final  // Trim()  elimina Inicio y final
+
+        // llave1=valor1&llave2=valor2&...
+        // Split() divide una cadena en subcadenas basándose en un delimitador específico, en este caso el '&' que separa cada par de clave-valor en la query string. 
+        // El StringSplitOptions.RemoveEmptyEntries se utiliza para omitir cualquier entrada vacía que pueda resultar de dividir la cadena.
+        var pares = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach(var par in pares)
+        {
+            var partes = par.Split('=', 2);//el 2 significa que se va a dividir en 2 partes, la primera parte será la llave y la segunda parte será el valor, incluso si el valor contiene el caracter '='
+            var llave = partes[0];
+            var valor = partes[1];
+
+            if(llave == "v")
+            {
+                return $"https://www.youtube.com/embed/{valor}";                
+            }
+        }
+        return url;
+    }
+
+    private async Task Borrar()
+    {
+        await servicioPeliculas.Borrar(Id);
+        navigationManager.NavigateTo("/");
+    }
+
+    private async Task OnRating(int voto)
+    {
+        var authenticationState = await AuthenticationStateTask!;// obtenemos el estado de autenticación del usuario
+        var usuarioEstaAutenticado = authenticationState.User.Identity is not null && authenticationState.User.Identity.IsAuthenticated; // verificamos si el usuario está autenticado
+
+        if(usuarioEstaAutenticado)
+        {
+            var votoPeliculaDTO = new VotoPeliculaDTo(Id, voto);
+            await servicioVotos.Votar(votoPeliculaDTO);
+            await JS.MostrarAlertaExitosa("Exitoso","La votación fue guardada con éxito");
+        }else
+        {
+            await JS.MostrarAlertaError("Error","Debe loguearse para poder votar");
+        }
+
+    }
+}

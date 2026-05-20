@@ -3,7 +3,7 @@ using BlazorPeliculas.Components;
 using BlazorPeliculas.Components.Account;
 using BlazorPeliculas.Constantes;
 using BlazorPeliculas.Datos;
-using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Client.Entidades;
 using BlazorPeliculas.Politicas;
 using BlazorPeliculas.Servicios;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
+using BlazorPeliculas.Entidades;
+using BlazorPeliculas.Client.Servicios;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
+
+builder.Services.AddControllers().AddJsonOptions(x =>
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -146,6 +152,8 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.UseStaticFiles();//se agrega para que el servidor pueda servir los archivos estáticos como css, js, imágenes, etc localmente
+
+app.MapControllers();
 
 //las siguientes dos lineas se comentan porque ahora nuestro proyecto va poder usar WebAssembly con las otras 4 lineas del builder(cap. 151 curso)
 //app.MapRazorComponents<App>()
