@@ -1,12 +1,13 @@
 ﻿using BlazorPeliculas.Client.DTOs;
+using System.Net.Http.Json;
 
 namespace BlazorPeliculas.Client.Servicios
 {
-    public class ServicioVotosHttp : IServicioVotos
+    public class ServicioVotosHttp(HttpClient httpClient) : IServicioVotos
     {
-        public Task Votar(VotoPeliculaDTo votoPeliculaDTo)
+        public async Task Votar(VotoPeliculaDTo votoPeliculaDTo)
         {
-            throw new NotImplementedException();
+            await httpClient.PostAsJsonAsync("api/votos", votoPeliculaDTo);
         }
     }
 }

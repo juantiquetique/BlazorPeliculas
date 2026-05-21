@@ -27,6 +27,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 
+//builder.Services.AddControllers(): Esto registra los controladores de tu API.
+//AddJsonOptions:  Aquí estás configurando cómo se convierte un objeto de C# a JSON.
+//ReferenceHandler.IgnoreCycles: Sirve para evitar errores por referencias circulares.
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
@@ -153,7 +156,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.UseStaticFiles();//se agrega para que el servidor pueda servir los archivos estáticos como css, js, imágenes, etc localmente
 
-app.MapControllers();
+app.MapControllers(); //Activa y conecta los controllers para que puedan responder peticiones HTTP le dice que controller debe ejecutar, que método debe usar, que endpoint existe
 
 //las siguientes dos lineas se comentan porque ahora nuestro proyecto va poder usar WebAssembly con las otras 4 lineas del builder(cap. 151 curso)
 //app.MapRazorComponents<App>()
